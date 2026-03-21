@@ -7,90 +7,171 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins;}
+*{/* RESET */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Poppins;
+}
 
-body{display:flex;background:#f8f9fb;}
+body{
+  display:flex;
+  background:#f4f6fb;
+  color:#111;
+}
 
 /* SIDEBAR */
 .sidebar{
-  width:220px;
+  width:230px;
   height:100vh;
-  background:white;
+  background:#111;
+  color:white;
   padding:25px;
-  border-right:1px solid #eee;
+}
+
+.sidebar h2{
+  margin-bottom:20px;
+}
+
+.sidebar button{
+  background:#222;
+  border:none;
+  padding:10px;
+  width:100%;
+  border-radius:8px;
+  color:white;
+  cursor:pointer;
 }
 
 /* MAIN */
-.main{flex:1;padding:30px;}
+.main{
+  flex:1;
+  padding:30px;
+}
 
+/* HEADER */
 .header{
   display:flex;
   justify-content:space-between;
-  margin-bottom:20px;
+  align-items:center;
+  margin-bottom:25px;
 }
 
 .btn{
   padding:10px 18px;
-  background:#111;
-  color:white;
   border:none;
   border-radius:30px;
+  background:#111;
+  color:white;
   cursor:pointer;
 }
 
 /* TABLE */
 .table{
   width:100%;
+  border-collapse:collapse;
   background:white;
   border-radius:15px;
   overflow:hidden;
   margin-top:10px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.05);
 }
 
-.table th,.table td{
-  padding:12px;
-  border-bottom:1px solid #eee;
+.table th{
+  background:#f3f4f6;
+  padding:14px;
+  font-weight:500;
+}
+
+.table td{
+  padding:14px;
+  border-top:1px solid #eee;
+  vertical-align:middle;
 }
 
 .table img{
   width:50px;
+  height:50px;
   border-radius:10px;
+  object-fit:cover;
 }
 
-/* MODAL */
-.modal{
+/* 🔥 CLEAN MODAL */
+.modal2{
   position:fixed;
-  top:0;left:0;
-  width:100%;height:100%;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
   display:none;
   justify-content:center;
   align-items:center;
-  background:rgba(0,0,0,0.5);
+  background:rgba(0,0,0,0.4);
+  backdrop-filter:blur(6px);
 }
 
-.modal-box{
+/* MODAL BOX */
+.modal-box2{
   background:white;
-  padding:20px;
-  border-radius:15px;
-  width:320px;
+  padding:25px;
+  border-radius:20px;
+  width:350px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.1);
+  animation:fadeIn 0.3s ease;
 }
 
-/* ORDER ITEMS */
-.order-item{
-  border-bottom:1px solid #eee;
-  padding:6px 0;
-  font-size:13px;
+/* INPUTS */
+.modal-box2 input,
+.modal-box2 textarea,
+.modal-box2 select{
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  border:1px solid #ddd;
+  border-radius:10px;
+  font-size:14px;
+}
+
+/* BUTTON */
+.modal-box2 button{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  border:none;
+  border-radius:30px;
+  background:#111;
+  color:white;
+  cursor:pointer;
+}
+
+/* ANIMATION */
+@keyframes fadeIn{
+  from{opacity:0; transform:scale(0.9);}
+  to{opacity:1; transform:scale(1);}
 }
 </style>
 </head>
 
 <body>
 
-<div class="sidebar">
-  <h2>RJEZM</h2>
-  <p>Dashboard</p>
+<!-- 🔐 LOGIN -->
+<div id="loginModal" class="modal">
+  <div class="modal-box">
+    <h2>Admin Login</h2>
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <button class="btn" onclick="login()">Login</button>
+  </div>
 </div>
 
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>RJEZM</h2>
+  <button class="btn" onclick="logout()">Logout</button>
+</div>
+
+<!-- MAIN -->
 <div class="main">
 
 <div class="header">
@@ -101,13 +182,7 @@ body{display:flex;background:#f8f9fb;}
 <table class="table">
 <thead>
 <tr>
-<th>Image</th>
-<th>Name</th>
-<th>Desc</th>
-<th>Price</th>
-<th>Stock</th>
-<th>Type</th>
-<th>Action</th>
+<th>Image</th><th>Name</th><th>Desc</th><th>Price</th><th>Stock</th><th>Type</th><th>Action</th>
 </tr>
 </thead>
 <tbody id="productTable"></tbody>
@@ -118,11 +193,7 @@ body{display:flex;background:#f8f9fb;}
 <table class="table">
 <thead>
 <tr>
-<th>Customer</th>
-<th>Items</th>
-<th>Total</th>
-<th>Status</th>
-<th>Action</th>
+<th>Customer</th><th>Total</th><th>Status</th><th>Action</th>
 </tr>
 </thead>
 <tbody id="orderTable"></tbody>
@@ -130,9 +201,9 @@ body{display:flex;background:#f8f9fb;}
 
 </div>
 
-<!-- ADD -->
-<div id="addModal" class="modal">
-<div class="modal-box">
+<!-- ADD PRODUCT -->
+<div id="addModal" class="modal2">
+<div class="modal-box2">
 <h3>Add Product</h3>
 <input id="name" placeholder="Name">
 <input id="price" placeholder="Price">
@@ -142,15 +213,15 @@ body{display:flex;background:#f8f9fb;}
 <option value="digital">Digital</option>
 <option value="physical">On-Hand</option>
 </select>
-<input id="download" placeholder="Download Link (digital)">
+<input id="download" placeholder="Download link (digital)">
 <input type="file" id="imageFile">
 <button class="btn" onclick="addProduct()">Save</button>
 </div>
 </div>
 
-<!-- ORDER MODAL -->
-<div id="orderModal" class="modal">
-<div class="modal-box" style="width:400px;">
+<!-- ORDER DETAILS -->
+<div id="orderModal" class="modal2">
+<div class="modal-box2">
 <h3>Order Details</h3>
 <div id="orderDetails"></div>
 <button class="btn" onclick="orderModal.style.display='none'">Close</button>
@@ -159,153 +230,196 @@ body{display:flex;background:#f8f9fb;}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
-getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc 
+
+import {
+getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-const app = initializeApp({
-apiKey:"AIzaSy...",
-projectId:"craftstudio-75508"
-});
+import {
+getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+import {
+getStorage, ref, uploadBytes, getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+/* 🔥 CORRECT CONFIG */
+const firebaseConfig = {
+  apiKey: "AIzaSyC4WQfNT3x6MFRftIlKPlfLcYMoY4juIhM",
+  authDomain: "craftstudio-75508.firebaseapp.com",
+  projectId: "craftstudio-75508",
+  storageBucket: "craftstudio-75508.appspot.com",
+  messagingSenderId: "989141876605",
+  appId: "1:989141876605:web:f36254dd915f2c84219614"
+};
+
+const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 const storage = getStorage(app);
 
-/* ADD */
-window.openAdd=()=>addModal.style.display="flex";
+/* 🔐 AUTH + ROLE */
+onAuthStateChanged(auth, async(user)=>{
+  if(!user){
+    loginModal.style.display="flex";
+    return;
+  }
 
-window.addProduct=async()=>{
-const file=imageFile.files[0];
-const refS=ref(storage,"products/"+Date.now());
-await uploadBytes(refS,file);
-const url=await getDownloadURL(refS);
+  const adminDoc = await getDoc(doc(db,"admins",user.uid));
 
-await addDoc(collection(db,"products"),{
-name:name.value,
-price:+price.value,
-stock:+stock.value,
-desc:desc.value,
-type:type.value,
-download:download.value,
-image:url
+  if(!adminDoc.exists()){
+    alert("Not admin");
+    location.href="index.html";
+    return;
+  }
+
+  loginModal.style.display="none";
+  loadProducts();
+  loadOrders();
 });
 
-location.reload();
+/* LOGIN */
+window.login = async()=>{
+  try{
+    await signInWithEmailAndPassword(
+      auth,
+      email.value.trim(),
+      password.value.trim()
+    );
+  }catch(err){
+    alert("Login failed: "+err.code);
+  }
+};
+
+/* LOGOUT */
+window.logout = async()=>{
+  await signOut(auth);
+  location.reload();
+};
+
+/* ADD */
+window.openAdd = ()=> addModal.style.display="flex";
+
+window.addProduct = async()=>{
+  const file = imageFile.files[0];
+  if(!file) return alert("Upload image");
+
+  const refS = ref(storage,"products/"+Date.now());
+  await uploadBytes(refS,file);
+  const url = await getDownloadURL(refS);
+
+  await addDoc(collection(db,"products"),{
+    name:name.value,
+    price:+price.value,
+    stock:+stock.value,
+    desc:desc.value,
+    type:type.value,
+    download:download.value,
+    image:url
+  });
+
+  alert("Saved!");
+  location.reload();
 };
 
 /* PRODUCTS */
 async function loadProducts(){
-productTable.innerHTML="";
-const data=await getDocs(collection(db,"products"));
+  productTable.innerHTML="";
+  const data = await getDocs(collection(db,"products"));
 
-data.forEach(d=>{
-const p=d.data();
+  data.forEach(d=>{
+    const p=d.data();
 
-productTable.innerHTML+=`
-<tr>
-<td><img src="${p.image}"></td>
-<td>${p.name}</td>
-<td>${p.desc}</td>
-<td>₱${p.price}</td>
-<td>${p.stock}</td>
-<td>${p.type}</td>
-<td>
-<button onclick="del('${d.id}')">Delete</button>
-</td>
-</tr>`;
-});
+    productTable.innerHTML+=`
+    <tr>
+      <td><img src="${p.image}"></td>
+      <td>${p.name}</td>
+      <td>${p.desc}</td>
+      <td>₱${p.price}</td>
+      <td>${p.stock}</td>
+      <td>${p.type}</td>
+      <td><button onclick="del('${d.id}')">Delete</button></td>
+    </tr>`;
+  });
 }
 
 /* ORDERS */
 async function loadOrders(){
-orderTable.innerHTML="";
-const data=await getDocs(collection(db,"orders"));
+  orderTable.innerHTML="";
+  const data = await getDocs(collection(db,"orders"));
 
-data.forEach(d=>{
-const o=d.data();
+  data.forEach(d=>{
+    const o=d.data();
 
-let items="";
-o.items?.forEach(i=>{
-items+=`${i.name} x${i.qty}<br>`;
-});
-
-orderTable.innerHTML+=`
-<tr onclick='viewOrder(${JSON.stringify(o)})'>
-<td>${o.customer?.name||"N/A"}</td>
-<td>${items}</td>
-<td>₱${o.total}</td>
-<td>${o.status}</td>
-<td>
-<button onclick="event.stopPropagation();done('${d.id}')">Done</button>
-<button onclick="event.stopPropagation();delOrder('${d.id}')">Delete</button>
-</td>
-</tr>`;
-});
+    orderTable.innerHTML+=`
+    <tr onclick='viewOrder(${JSON.stringify(o)})'>
+      <td>${o.customer?.name || "N/A"}</td>
+      <td>₱${o.total}</td>
+      <td>${o.status}</td>
+      <td>
+        <button onclick="event.stopPropagation();done('${d.id}')">Done</button>
+        <button onclick="event.stopPropagation();delOrder('${d.id}')">Delete</button>
+      </td>
+    </tr>`;
+  });
 }
 
-/* VIEW */
-window.viewOrder=(o)=>{
-let html="";
+/* VIEW ORDER */
+window.viewOrder = (o)=>{
+  let html="";
+  o.items?.forEach(i=>{
+    html+=`<div class="order-item">${i.name} x${i.qty}</div>`;
+  });
 
-html+=`<b>${o.customer?.name||""}</b><br>`;
+  if(o.downloads){
+    html+="<h4>Downloads</h4>";
+    o.downloads.forEach(d=>{
+      html+=`<a href="${d.link}" target="_blank">${d.name}</a><br>`;
+    });
+  }
 
-o.items?.forEach(i=>{
-html+=`<div class="order-item">${i.name} x${i.qty}</div>`;
-});
-
-if(o.downloads){
-html+="<h4>Downloads</h4>";
-o.downloads.forEach(d=>{
-html+=`<a href="${d.link}" target="_blank">${d.name}</a><br>`;
-});
-}
-
-orderDetails.innerHTML=html;
-orderModal.style.display="flex";
+  orderDetails.innerHTML=html;
+  orderModal.style.display="flex";
 };
 
-/* DONE (AUTO DIGITAL) */
-window.done=async(id)=>{
-const refO=doc(db,"orders",id);
-const snap=await getDoc(refO);
-const order=snap.data();
+/* DONE */
+window.done = async(id)=>{
+  const refO = doc(db,"orders",id);
+  const snap = await getDoc(refO);
+  const order = snap.data();
 
-const prods=await getDocs(collection(db,"products"));
+  const prods = await getDocs(collection(db,"products"));
 
-let downloads=[];
+  let downloads=[];
 
-prods.forEach(p=>{
-const data=p.data();
-const match=order.items.find(i=>i.name===data.name);
+  prods.forEach(p=>{
+    const data=p.data();
+    const match=order.items.find(i=>i.name===data.name);
 
-if(match && data.type==="digital"){
-downloads.push({name:data.name,link:data.download});
-}
-});
+    if(match && data.type==="digital"){
+      downloads.push({name:data.name,link:data.download});
+    }
+  });
 
-await updateDoc(refO,{
-status:"completed",
-downloads
-});
+  await updateDoc(refO,{
+    status:"completed",
+    downloads
+  });
 
-alert("Done + delivered!");
-location.reload();
+  alert("Order completed!");
+  location.reload();
 };
 
 /* DELETE */
-window.del=async(id)=>{
-await deleteDoc(doc(db,"products",id));
-location.reload();
+window.del = async(id)=>{
+  await deleteDoc(doc(db,"products",id));
+  loadProducts();
 };
 
-window.delOrder=async(id)=>{
-await deleteDoc(doc(db,"orders",id));
-location.reload();
+window.delOrder = async(id)=>{
+  await deleteDoc(doc(db,"orders",id));
+  loadOrders();
 };
-
-loadProducts();
-loadOrders();
 </script>
 
 </body>
