@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login</title>
+
+<style>
+body{
+  font-family:Poppins;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  background:#111;
+  color:white;
+}
+
+.box{
+  background:#1e1e1e;
+  padding:30px;
+  border-radius:10px;
+  width:300px;
+}
+
+input{
+  width:100%;
+  padding:10px;
+  margin:10px 0;
+  border:none;
+  border-radius:5px;
+}
+
+button{
+  width:100%;
+  padding:10px;
+  background:white;
+  color:black;
+  border:none;
+  border-radius:5px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>Admin Login</h2>
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC4WQfNT3x6MFRftIlKPlfLcYMoY4juIhM",
+  authDomain: "craftstudio-75508.firebaseapp.com",
+  projectId: "craftstudio-75508",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+async function login(){
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  try{
+    await signInWithEmailAndPassword(auth, email, password);
+    window.location.href = "admin.html";
+  }catch(e){
+    alert("Login failed");
+  }
+}
+
+window.login = login;
+</script>
+
+</body>
+</html>

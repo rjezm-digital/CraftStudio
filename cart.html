@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cart</title>
+
+<style>
+body{font-family:Poppins;padding:20px;}
+.item{border-bottom:1px solid #ddd;padding:10px 0;}
+button{padding:10px;background:black;color:white;border:none;}
+</style>
+</head>
+
+<body>
+
+<h2>Your Cart</h2>
+
+<div id="cartList"></div>
+
+<h3 id="total"></h3>
+
+<button onclick="checkout()">Checkout</button>
+
+<script src="cart.js"></script>
+
+<script>
+const cart = getCart();
+let total = 0;
+
+const list = document.getElementById("cartList");
+
+cart.forEach(p=>{
+  total += Number(p.price);
+
+  list.innerHTML += `
+    <div class="item">
+      ${p.name} - ₱${p.price}
+    </div>
+  `;
+});
+
+document.getElementById("total").innerText = "Total: ₱" + total;
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC4WQfNT3x6MFRftIlKPlfLcYMoY4juIhM",
+  authDomain: "craftstudio-75508.firebaseapp.com",
+  projectId: "craftstudio-75508",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function checkout(){
+  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+  if(cart.length === 0){
+    alert("Cart is empty");
+    return;
+  }
+
+  await addDoc(collection(db,"orders"),{
+    items: cart,
+    date: new Date().toISOString()
+  });
+
+  alert("Order placed!");
+
+  localStorage.removeItem("cart");
+  location.reload();
+}
+
+window.checkout = checkout;
+</script>
+
+<h3>Pay via GCash</h3>
+<img src="images/gcash.jpg" width="200">
+<p>Send payment then confirm via chat.</p>
+
+</body>
+</html>

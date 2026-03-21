@@ -1,114 +1,186 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Panel</title>
+<title>Admin Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
-body{
-  font-family:Poppins;
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins;}
+
+body{display:flex;background:#f5f6fa;}
+
+/* SIDEBAR */
+.sidebar{
+  width:220px;
+  height:100vh;
+  background:#111;
+  color:white;
   padding:20px;
-  background:#f4f4f4;
 }
 
-input, select{
-  width:100%;
-  padding:10px;
-  margin:10px 0;
+.sidebar a{display:block;color:#ccc;margin:15px 0;text-decoration:none;}
+.sidebar a:hover{color:white;}
+
+/* MAIN */
+.main{flex:1;padding:20px;}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:20px;
 }
 
 button{
   padding:10px;
-  background:black;
+  background:#111;
   color:white;
   border:none;
-  cursor:pointer;
+  border-radius:8px;
 }
 
-.card{
+/* TABLE */
+.table{width:100%;background:white;border-radius:10px;overflow:hidden;}
+.table th,.table td{padding:12px;}
+.table th{background:#eee;}
+
+/* MODAL */
+.modal{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,0.5);
+  display:none;
+  justify-content:center;
+  align-items:center;
+}
+
+.modal-content{
   background:white;
-  padding:15px;
-  margin-top:20px;
+  padding:20px;
   border-radius:10px;
+  width:300px;
+}
+
+input,select{
+  width:100%;
+  padding:10px;
+  margin:10px 0;
 }
 </style>
 </head>
 
 <body>
 
-<h2>📦 Add Product</h2>
+<div class="sidebar">
+  <h2>RJEZM</h2>
+  <a>Dashboard</a>
+</div>
 
-<input type="text" id="name" placeholder="Product Name">
-<input type="text" id="price" placeholder="Price (₱)">
-<select id="type">
-  <option value="digital">Digital</option>
-  <option value="physical">On-Hand</option>
-</select>
-<input type="text" id="image" placeholder="Image path (images/sample.jpg)">
+<div class="main">
 
-<button onclick="addProduct()">Add Product</button>
+  <div class="header">
+    <h2>Products</h2>
+    <div>
+      <button onclick="openModal()">+ Add</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
 
-<h3>Saved Products</h3>
-<div id="list"></div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Image</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Type</th>
+      </tr>
+    </thead>
+    <tbody id="productList"></tbody>
+  </table>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h3>Add Product</h3>
+    <input id="name" placeholder="Name">
+    <input id="price" placeholder="Price">
+    <select id="type">
+      <option value="digital">Digital</option>
+      <option value="physical">On-Hand</option>
+    </select>
+    <input id="image" placeholder="images/sample.jpg">
+    <button onclick="addProduct()">Save</button>
+  </div>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// ✅ YOUR CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyC4WQfNT3x6MFRftIlKPlfLcYMoY4juIhM",
   authDomain: "craftstudio-75508.firebaseapp.com",
   projectId: "craftstudio-75508",
-  storageBucket: "craftstudio-75508.firebasestorage.app",
-  messagingSenderId: "989141876605",
-  appId: "1:989141876605:web:f36254dd915f2c84219614"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-// ➕ ADD PRODUCT
-async function addProduct(){
-  const name = document.getElementById("name").value;
-  const price = document.getElementById("price").value;
-  const type = document.getElementById("type").value;
-  const image = document.getElementById("image").value;
+// 🔒 PROTECT PAGE
+onAuthStateChanged(auth, (user) => {
+  if (!user) window.location.href = "login.html";
+});
 
-  if(!name || !price || !image){
-    alert("Fill all fields");
-    return;
-  }
-
-  await addDoc(collection(db, "products"), {
-    name, price, type, image
-  });
-
-  alert("✅ Product saved!");
-  loadProducts();
+// MODAL
+function openModal(){
+  document.getElementById("modal").style.display="flex";
 }
+window.openModal = openModal;
 
-// 📦 LOAD PRODUCTS
+// ADD PRODUCT
+async function addProduct(){
+  const name = nameInput.value;
+  const price = priceInput.value;
+  const type = typeInput.value;
+  const image = imageInput.value;
+
+  await addDoc(collection(db,"products"),{name,price,type,image});
+  alert("Saved!");
+  location.reload();
+}
+window.addProduct = addProduct;
+
+// LOGOUT
+function logout(){
+  signOut(auth);
+  window.location.href="login.html";
+}
+window.logout = logout;
+
+// LOAD PRODUCTS
 async function loadProducts(){
-  const list = document.getElementById("list");
-  list.innerHTML = "";
+  const list = document.getElementById("productList");
+  const querySnapshot = await getDocs(collection(db,"products"));
 
-  const querySnapshot = await getDocs(collection(db, "products"));
-
-  querySnapshot.forEach((doc) => {
+  querySnapshot.forEach(doc=>{
     const p = doc.data();
-
     list.innerHTML += `
-      <div class="card">
-        <b>${p.name}</b><br>
-        ₱${p.price}<br>
-        <img src="${p.image}" width="100">
-      </div>
+      <tr>
+        <td><img src="${p.image}" width="50"></td>
+        <td>${p.name}</td>
+        <td>₱${p.price}</td>
+        <td>${p.type}</td>
+      </tr>
     `;
   });
 }
 
-window.addProduct = addProduct;
 loadProducts();
 </script>
 
