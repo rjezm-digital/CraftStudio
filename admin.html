@@ -7,18 +7,48 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
-*{/* RESET */
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:Poppins;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins;}
 
 body{
   display:flex;
   background:#f4f6fb;
-  color:#111;
+}
+
+/* LOGIN */
+.modal{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:rgba(0,0,0,0.8);
+  z-index:999;
+}
+
+.modal-box{
+  background:white;
+  padding:30px;
+  border-radius:20px;
+  width:320px;
+}
+
+.modal-box input{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border:1px solid #ddd;
+  border-radius:10px;
+}
+
+.btn{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:30px;
+  background:#111;
+  color:white;
+  cursor:pointer;
 }
 
 /* SIDEBAR */
@@ -28,20 +58,6 @@ body{
   background:#111;
   color:white;
   padding:25px;
-}
-
-.sidebar h2{
-  margin-bottom:20px;
-}
-
-.sidebar button{
-  background:#222;
-  border:none;
-  padding:10px;
-  width:100%;
-  border-radius:8px;
-  color:white;
-  cursor:pointer;
 }
 
 /* MAIN */
@@ -55,107 +71,72 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:25px;
-}
-
-.btn{
-  padding:10px 18px;
-  border:none;
-  border-radius:30px;
-  background:#111;
-  color:white;
-  cursor:pointer;
+  margin-bottom:20px;
 }
 
 /* TABLE */
 .table{
   width:100%;
-  border-collapse:collapse;
   background:white;
   border-radius:15px;
   overflow:hidden;
   margin-top:10px;
-  box-shadow:0 5px 20px rgba(0,0,0,0.05);
 }
 
 .table th{
   background:#f3f4f6;
-  padding:14px;
-  font-weight:500;
+  padding:12px;
 }
 
 .table td{
-  padding:14px;
+  padding:12px;
   border-top:1px solid #eee;
-  vertical-align:middle;
 }
 
 .table img{
   width:50px;
   height:50px;
   border-radius:10px;
-  object-fit:cover;
 }
 
-/* 🔥 CLEAN MODAL */
+/* MODAL */
 .modal2{
   position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
+  top:0;left:0;
+  width:100%;height:100%;
   display:none;
   justify-content:center;
   align-items:center;
   background:rgba(0,0,0,0.4);
-  backdrop-filter:blur(6px);
 }
 
-/* MODAL BOX */
 .modal-box2{
   background:white;
   padding:25px;
   border-radius:20px;
   width:350px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.1);
-  animation:fadeIn 0.3s ease;
 }
 
-/* INPUTS */
 .modal-box2 input,
 .modal-box2 textarea,
 .modal-box2 select{
   width:100%;
-  padding:12px;
+  padding:10px;
   margin:8px 0;
   border:1px solid #ddd;
   border-radius:10px;
-  font-size:14px;
 }
 
-/* BUTTON */
-.modal-box2 button{
-  width:100%;
-  margin-top:10px;
-  padding:12px;
-  border:none;
-  border-radius:30px;
-  background:#111;
-  color:white;
-  cursor:pointer;
-}
-
-/* ANIMATION */
-@keyframes fadeIn{
-  from{opacity:0; transform:scale(0.9);}
-  to{opacity:1; transform:scale(1);}
+.order-item{
+  border-bottom:1px solid #eee;
+  padding:5px 0;
 }
 </style>
 </head>
 
 <body>
 
-<!-- 🔐 LOGIN -->
+<!-- LOGIN -->
 <div id="loginModal" class="modal">
   <div class="modal-box">
     <h2>Admin Login</h2>
@@ -176,7 +157,7 @@ body{
 
 <div class="header">
   <h2>Products</h2>
-  <button class="btn" onclick="openAdd()">+ Add</button>
+  <button class="btn" onclick="addModal.style.display='flex'">+ Add</button>
 </div>
 
 <table class="table">
@@ -203,71 +184,66 @@ body{
 
 <!-- ADD PRODUCT -->
 <div id="addModal" class="modal2">
-<div class="modal-box2">
-<h3>Add Product</h3>
-<input id="name" placeholder="Name">
-<input id="price" placeholder="Price">
-<input id="stock" placeholder="Stock">
-<textarea id="desc" placeholder="Description"></textarea>
-<select id="type">
-<option value="digital">Digital</option>
-<option value="physical">On-Hand</option>
-</select>
-<input id="download" placeholder="Download link (digital)">
-<input type="file" id="imageFile">
-<button class="btn" onclick="addProduct()">Save</button>
-</div>
+  <div class="modal-box2">
+    <h3>Add Product</h3>
+    <input id="name" placeholder="Name">
+    <input id="price" placeholder="Price">
+    <input id="stock" placeholder="Stock">
+    <textarea id="desc" placeholder="Description"></textarea>
+    <select id="type">
+      <option value="digital">Digital</option>
+      <option value="physical">On-Hand</option>
+    </select>
+    <input id="download" placeholder="Download link">
+    <input type="file" id="imageFile">
+    <button onclick="addProduct()">Save Product</button>
+  </div>
 </div>
 
 <!-- ORDER DETAILS -->
 <div id="orderModal" class="modal2">
-<div class="modal-box2">
-<h3>Order Details</h3>
-<div id="orderDetails"></div>
-<button class="btn" onclick="orderModal.style.display='none'">Close</button>
-</div>
+  <div class="modal-box2">
+    <h3>Order Details</h3>
+    <div id="orderDetails"></div>
+    <button onclick="orderModal.style.display='none'">Close</button>
+  </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import {
-getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-import {
-getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+  setPersistence,
+  browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-import {
-getStorage, ref, uploadBytes, getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+const app = initializeApp({
+  apiKey:"AIzaSyC4WQfNT3x6MFRftIlKPlfLcYMoY4juIhM",
+  authDomain:"craftstudio-75508.firebaseapp.com",
+  projectId:"craftstudio-75508",
+  storageBucket:"craftstudio-75508.appspot.com",
+  messagingSenderId:"989141876605",
+  appId:"1:989141876605:web:f36254dd915f2c84219614"
+});
 
-/* 🔥 CORRECT CONFIG */
-const firebaseConfig = {
-  apiKey: "AIzaSyC4WQfNT3x6MFRftIlKPlfLcYMoY4juIhM",
-  authDomain: "craftstudio-75508.firebaseapp.com",
-  projectId: "craftstudio-75508",
-  storageBucket: "craftstudio-75508.appspot.com",
-  messagingSenderId: "989141876605",
-  appId: "1:989141876605:web:f36254dd915f2c84219614"
-};
-
-const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
 
-/* 🔐 AUTH + ROLE */
+/* AUTH */
 onAuthStateChanged(auth, async(user)=>{
   if(!user){
     loginModal.style.display="flex";
     return;
   }
 
-  const adminDoc = await getDoc(doc(db,"admins",user.uid));
-
-  if(!adminDoc.exists()){
+  const admin = await getDoc(doc(db,"admins",user.uid));
+  if(!admin.exists()){
     alert("Not admin");
     location.href="index.html";
     return;
@@ -281,13 +257,18 @@ onAuthStateChanged(auth, async(user)=>{
 /* LOGIN */
 window.login = async()=>{
   try{
+
+    // 👉 THIS IS THE KEY
+    await setPersistence(auth, browserSessionPersistence);
+
     await signInWithEmailAndPassword(
       auth,
       email.value.trim(),
       password.value.trim()
     );
+
   }catch(err){
-    alert("Login failed: "+err.code);
+    alert("Login failed: " + err.message);
   }
 };
 
@@ -297,29 +278,32 @@ window.logout = async()=>{
   location.reload();
 };
 
-/* ADD */
-window.openAdd = ()=> addModal.style.display="flex";
-
+/* ADD PRODUCT */
 window.addProduct = async()=>{
-  const file = imageFile.files[0];
-  if(!file) return alert("Upload image");
+  try{
+    const file = imageFile.files[0];
+    if(!file) return alert("Upload image");
 
-  const refS = ref(storage,"products/"+Date.now());
-  await uploadBytes(refS,file);
-  const url = await getDownloadURL(refS);
+    const refS = ref(storage,"products/"+Date.now());
+    await uploadBytes(refS,file);
+    const url = await getDownloadURL(refS);
 
-  await addDoc(collection(db,"products"),{
-    name:name.value,
-    price:+price.value,
-    stock:+stock.value,
-    desc:desc.value,
-    type:type.value,
-    download:download.value,
-    image:url
-  });
+    await addDoc(collection(db,"products"),{
+      name:name.value,
+      price:+price.value,
+      stock:+stock.value,
+      desc:desc.value || "",
+      type:type.value,
+      download:download.value || "",
+      image:url
+    });
 
-  alert("Saved!");
-  location.reload();
+    alert("Saved!");
+    location.reload();
+
+  }catch(err){
+    alert("Error saving");
+  }
 };
 
 /* PRODUCTS */
@@ -334,9 +318,9 @@ async function loadProducts(){
     <tr>
       <td><img src="${p.image}"></td>
       <td>${p.name}</td>
-      <td>${p.desc}</td>
+      <td>${p.desc || "-"}</td>
       <td>₱${p.price}</td>
-      <td>${p.stock}</td>
+      <td>${p.stock ?? 0}</td>
       <td>${p.type}</td>
       <td><button onclick="del('${d.id}')">Delete</button></td>
     </tr>`;
@@ -364,49 +348,19 @@ async function loadOrders(){
   });
 }
 
-/* VIEW ORDER */
+/* VIEW */
 window.viewOrder = (o)=>{
   let html="";
   o.items?.forEach(i=>{
     html+=`<div class="order-item">${i.name} x${i.qty}</div>`;
   });
-
-  if(o.downloads){
-    html+="<h4>Downloads</h4>";
-    o.downloads.forEach(d=>{
-      html+=`<a href="${d.link}" target="_blank">${d.name}</a><br>`;
-    });
-  }
-
   orderDetails.innerHTML=html;
   orderModal.style.display="flex";
 };
 
 /* DONE */
 window.done = async(id)=>{
-  const refO = doc(db,"orders",id);
-  const snap = await getDoc(refO);
-  const order = snap.data();
-
-  const prods = await getDocs(collection(db,"products"));
-
-  let downloads=[];
-
-  prods.forEach(p=>{
-    const data=p.data();
-    const match=order.items.find(i=>i.name===data.name);
-
-    if(match && data.type==="digital"){
-      downloads.push({name:data.name,link:data.download});
-    }
-  });
-
-  await updateDoc(refO,{
-    status:"completed",
-    downloads
-  });
-
-  alert("Order completed!");
+  await updateDoc(doc(db,"orders",id),{status:"completed"});
   location.reload();
 };
 
