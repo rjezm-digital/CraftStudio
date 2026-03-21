@@ -1,0 +1,60 @@
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// ✅ YOUR CONFIG
+const firebaseConfig = {
+  apiKey: "AIzaSyC4WQfNT3x6MFRftIlKPlfLcYMoY4juIhM",
+  authDomain: "craftstudio-75508.firebaseapp.com",
+  projectId: "craftstudio-75508",
+  storageBucket: "craftstudio-75508.firebasestorage.app",
+  messagingSenderId: "989141876605",
+  appId: "1:989141876605:web:f36254dd915f2c84219614"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ➕ ADD PRODUCT
+async function addProduct(){
+  const name = document.getElementById("name").value;
+  const price = document.getElementById("price").value;
+  const type = document.getElementById("type").value;
+  const image = document.getElementById("image").value;
+
+  if(!name || !price || !image){
+    alert("Fill all fields");
+    return;
+  }
+
+  await addDoc(collection(db, "products"), {
+    name, price, type, image
+  });
+
+  alert("✅ Product saved!");
+  loadProducts();
+}
+
+// 📦 LOAD PRODUCTS
+async function loadProducts(){
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  const querySnapshot = await getDocs(collection(db, "products"));
+
+  querySnapshot.forEach((doc) => {
+    const p = doc.data();
+
+    list.innerHTML += `
+      <div class="card">
+        <b>${p.name}</b><br>
+        ₱${p.price}<br>
+        <img src="${p.image}" width="100">
+      </div>
+    `;
+  });
+}
+
+window.addProduct = addProduct;
+loadProducts();
+</script>
