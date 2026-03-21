@@ -263,38 +263,48 @@ window.logout = async()=>{
 /* ADD PRODUCT */
 async function addProduct(){
   try{
-    console.log("🔥 Save clicked");
+    const nameVal = name.value.trim();
+    const priceVal = price.value.trim();
+    const stockVal = stock.value.trim();
+    const descVal = desc.value.trim();
+    const typeVal = type.value;
+    const downloadVal = download.value;
+    const file = imageFile.files[0];
 
-    const nameVal = document.getElementById("name").value.trim();
-    const priceVal = document.getElementById("price").value.trim();
-    const stockVal = document.getElementById("stock").value.trim();
-    const descVal = document.getElementById("desc").value.trim();
-    const typeVal = document.getElementById("type").value;
-    const downloadVal = document.getElementById("download").value;
-    const file = document.getElementById("imageFile").files[0];
-
-    // ✅ VALIDATION
     if(!nameVal || !priceVal || !stockVal){
-      alert("Fill all required fields");
+      alert("Fill all fields");
       return;
     }
 
-    if(!file){
-      alert("Upload image");
-      return;
+    // 🔥 INSTANT UI ADD (no waiting)
+    productTable.innerHTML += `
+      <tr>
+        <td>Uploading...</td>
+        <td>${nameVal}</td>
+        <td>${descVal}</td>
+        <td>₱${priceVal}</td>
+        <td>${stockVal}</td>
+        <td>${typeVal}</td>
+        <td>...</td>
+      </tr>
+    `;
+
+    addModal.style.display="none";
+
+    let imageURL = "";
+
+    // ✅ OPTIONAL IMAGE UPLOAD
+    if(file){
+      try{
+        const storageRef = ref(storage,"products/"+Date.now());
+        await uploadBytes(storageRef,file);
+        imageURL = await getDownloadURL(storageRef);
+      }catch(e){
+        console.log("Image upload failed, continue without image");
+      }
     }
 
-    // 🔄 UI feedback
-    const btn = document.getElementById("saveBtn");
-    btn.innerText = "Saving...";
-    btn.disabled = true;
-
-    // 📤 upload image
-    const storageRef = ref(storage,"products/"+Date.now());
-    await uploadBytes(storageRef,file);
-    const imageURL = await getDownloadURL(storageRef);
-
-    // 💾 save
+    // ✅ SAVE TO FIRESTORE (MAIN SAVE)
     await addDoc(collection(db,"products"),{
       name: nameVal,
       price: Number(priceVal),
@@ -306,19 +316,14 @@ async function addProduct(){
       createdAt: Date.now()
     });
 
-    alert("✅ Product saved!");
-
-    addModal.style.display="none";
-
-    // reload table (NO refresh)
+    // 🔄 REFRESH REAL DATA
     loadProducts();
 
-    btn.innerText = "Save Product";
-    btn.disabled = false;
+    alert("✅ Saved successfully!");
 
   }catch(err){
     console.error(err);
-    alert("❌ Failed to save");
+    alert("Error saving product");
   }
 }
 
