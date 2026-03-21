@@ -10,44 +10,47 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:Poppins;}
 
 body{
-  display:flex;
   background:#f4f6fb;
+  display:flex;
 }
 
 /* LOGIN */
 .modal{
   position:fixed;
   top:0;left:0;
-  width:100%;height:100%;
+  width:100vw;height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
-  background:rgba(0,0,0,0.8);
-  z-index:999;
+  background:rgba(0,0,0,0.95);
+  z-index:9999;
 }
 
 .modal-box{
-  background:white;
+  background:#111;
   padding:30px;
   border-radius:20px;
   width:320px;
+  color:white;
+  text-align:center;
 }
 
 .modal-box input{
   width:100%;
   padding:12px;
   margin:10px 0;
-  border:1px solid #ddd;
+  background:#1a1a1a;
+  border:1px solid #333;
+  color:white;
   border-radius:10px;
 }
 
 .btn{
-  width:100%;
   padding:12px;
   border:none;
   border-radius:30px;
-  background:#111;
-  color:white;
+  background:white;
+  color:black;
   cursor:pointer;
 }
 
@@ -64,14 +67,6 @@ body{
 .main{
   flex:1;
   padding:30px;
-}
-
-/* HEADER */
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:20px;
 }
 
 /* TABLE */
@@ -99,7 +94,7 @@ body{
   border-radius:10px;
 }
 
-/* MODAL */
+/* MODALS */
 .modal2{
   position:fixed;
   top:0;left:0;
@@ -112,8 +107,8 @@ body{
 
 .modal-box2{
   background:white;
-  padding:25px;
-  border-radius:20px;
+  padding:20px;
+  border-radius:15px;
   width:350px;
 }
 
@@ -125,11 +120,6 @@ body{
   margin:8px 0;
   border:1px solid #ddd;
   border-radius:10px;
-}
-
-.order-item{
-  border-bottom:1px solid #eee;
-  padding:5px 0;
 }
 </style>
 </head>
@@ -146,19 +136,18 @@ body{
   </div>
 </div>
 
-<!-- SIDEBAR -->
+<!-- APP -->
+<div id="appUI" style="display:none;width:100%;">
+
 <div class="sidebar">
   <h2>RJEZM</h2>
   <button class="btn" onclick="logout()">Logout</button>
 </div>
 
-<!-- MAIN -->
 <div class="main">
 
-<div class="header">
-  <h2>Products</h2>
-  <button class="btn" onclick="addModal.style.display='flex'">+ Add</button>
-</div>
+<h2>Products</h2>
+<button class="btn" onclick="addModal.style.display='flex'">+ Add</button>
 
 <table class="table">
 <thead>
@@ -181,6 +170,7 @@ body{
 </table>
 
 </div>
+</div>
 
 <!-- ADD PRODUCT -->
 <div id="addModal" class="modal2">
@@ -194,7 +184,7 @@ body{
       <option value="digital">Digital</option>
       <option value="physical">On-Hand</option>
     </select>
-    <input id="download" placeholder="Download link">
+    <input id="download" placeholder="Download link (digital)">
     <input type="file" id="imageFile">
     <button onclick="addProduct()">Save Product</button>
   </div>
@@ -212,44 +202,46 @@ body{
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut,
-  setPersistence,
-  browserSessionPersistence
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-const app = initializeApp({
-  apiKey:"AIzaSyC4WQfNT3x6MFRftIlKPlfLcYMoY4juIhM",
-  authDomain:"craftstudio-75508.firebaseapp.com",
-  projectId:"craftstudio-75508",
-  storageBucket:"craftstudio-75508.appspot.com",
-  messagingSenderId:"989141876605",
-  appId:"1:989141876605:web:f36254dd915f2c84219614"
+/* INIT */
+const firebaseApp = initializeApp({
+  apiKey: "AIzaSyC4WQfNT3x6MFRftIlKPlfLcYMoY4juIhM",
+  authDomain: "craftstudio-75508.firebaseapp.com",
+  projectId: "craftstudio-75508",
+  storageBucket: "craftstudio-75508.appspot.com",
+  messagingSenderId: "989141876605",
+  appId: "1:989141876605:web:f36254dd915f2c84219614"
 });
 
-const db = getFirestore(app);
-const auth = getAuth(app);
-const storage = getStorage(app);
+const db = getFirestore(firebaseApp);
+const auth = getAuth(firebaseApp);
+const storage = getStorage(firebaseApp);
+
+/* UI REFS */
+const loginModal = document.getElementById("loginModal");
+const appUI = document.getElementById("appUI");
 
 /* AUTH */
 onAuthStateChanged(auth, async(user)=>{
   if(!user){
     loginModal.style.display="flex";
+    appUI.style.display="none";
     return;
   }
 
-  const admin = await getDoc(doc(db,"admins",user.uid));
-  if(!admin.exists()){
+  const adminDoc = await getDoc(doc(db,"admins",user.uid));
+
+  if(!adminDoc.exists()){
     alert("Not admin");
-    location.href="index.html";
+    await signOut(auth);
     return;
   }
 
   loginModal.style.display="none";
+  appUI.style.display="flex";
+
   loadProducts();
   loadOrders();
 });
@@ -257,25 +249,15 @@ onAuthStateChanged(auth, async(user)=>{
 /* LOGIN */
 window.login = async()=>{
   try{
-
-    // 👉 THIS IS THE KEY
-    await setPersistence(auth, browserSessionPersistence);
-
-    await signInWithEmailAndPassword(
-      auth,
-      email.value.trim(),
-      password.value.trim()
-    );
-
-  }catch(err){
-    alert("Login failed: " + err.message);
+    await signInWithEmailAndPassword(auth,email.value,password.value);
+  }catch(e){
+    alert(e.message);
   }
 };
 
 /* LOGOUT */
 window.logout = async()=>{
   await signOut(auth);
-  location.reload();
 };
 
 /* ADD PRODUCT */
@@ -284,25 +266,27 @@ window.addProduct = async()=>{
     const file = imageFile.files[0];
     if(!file) return alert("Upload image");
 
-    const refS = ref(storage,"products/"+Date.now());
-    await uploadBytes(refS,file);
-    const url = await getDownloadURL(refS);
+    const storageRef = ref(storage,"products/"+Date.now());
+    await uploadBytes(storageRef,file);
+    const imageURL = await getDownloadURL(storageRef);
 
     await addDoc(collection(db,"products"),{
-      name:name.value,
-      price:+price.value,
-      stock:+stock.value,
-      desc:desc.value || "",
-      type:type.value,
-      download:download.value || "",
-      image:url
+      name: name.value,
+      price: Number(price.value),
+      stock: Number(stock.value),
+      desc: desc.value || "",
+      type: type.value,
+      download: download.value || "",
+      image: imageURL
     });
 
     alert("Saved!");
-    location.reload();
+    addModal.style.display="none";
+    loadProducts();
 
   }catch(err){
-    alert("Error saving");
+    console.error(err);
+    alert("Error saving product");
   }
 };
 
@@ -348,23 +332,22 @@ async function loadOrders(){
   });
 }
 
-/* VIEW */
+/* VIEW ORDER */
 window.viewOrder = (o)=>{
   let html="";
   o.items?.forEach(i=>{
-    html+=`<div class="order-item">${i.name} x${i.qty}</div>`;
+    html+=`<p>${i.name} x${i.qty}</p>`;
   });
   orderDetails.innerHTML=html;
   orderModal.style.display="flex";
 };
 
-/* DONE */
+/* ACTIONS */
 window.done = async(id)=>{
   await updateDoc(doc(db,"orders",id),{status:"completed"});
-  location.reload();
+  loadOrders();
 };
 
-/* DELETE */
 window.del = async(id)=>{
   await deleteDoc(doc(db,"products",id));
   loadProducts();
