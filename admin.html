@@ -269,12 +269,12 @@ window.addProduct = async () => {
     btn.disabled = true;
 
     const nameVal = document.getElementById("name").value.trim();
-const priceVal = document.getElementById("price").value.trim();
-const stockVal = document.getElementById("stock").value.trim();
-const descVal = document.getElementById("desc").value.trim();
-const typeVal = document.getElementById("type").value;
-const downloadVal = document.getElementById("download").value.trim();
-const file = document.getElementById("imageFile").files[0];
+    const priceVal = document.getElementById("price").value.trim();
+    const stockVal = document.getElementById("stock").value.trim();
+    const descVal = document.getElementById("desc").value.trim();
+    const typeVal = document.getElementById("type").value;
+    const downloadVal = document.getElementById("download").value.trim();
+    const file = document.getElementById("imageFile").files[0];
 
     if (!nameVal || !priceVal || !stockVal) {
       throw new Error("Fill required fields");
@@ -282,27 +282,17 @@ const file = document.getElementById("imageFile").files[0];
 
     let imageURL = "";
 
-    // 🔥 SAFE IMAGE UPLOAD (WITH TIMEOUT)
+    // 🔥 TEMP: DISABLE IMAGE UPLOAD (TO TEST)
+    // COMMENT THIS BLOCK FOR NOW
+    /*
     if (file) {
-      try {
-        const storageRef = ref(storage, "products/" + Date.now());
-
-        const uploadPromise = uploadBytes(storageRef, file);
-        const timeout = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error("Upload timeout")), 10000)
-        );
-
-        await Promise.race([uploadPromise, timeout]);
-
-        imageURL = await getDownloadURL(storageRef);
-
-      } catch (e) {
-        console.warn("Upload skipped:", e.message);
-        alert("⚠️ Image skipped. Saving without image.");
-      }
+      const storageRef = ref(storage, "products/" + Date.now());
+      await uploadBytes(storageRef, file);
+      imageURL = await getDownloadURL(storageRef);
     }
+    */
 
-    // 💾 SAVE (THIS MUST ALWAYS RUN)
+    // ✅ FIRESTORE SAVE ONLY
     await addDoc(collection(db, "products"), {
       name: nameVal,
       price: Number(priceVal),
@@ -314,7 +304,7 @@ const file = document.getElementById("imageFile").files[0];
       createdAt: Date.now()
     });
 
-    alert("✅ Saved!");
+    alert("✅ Saved successfully!");
 
     addModal.style.display = "none";
     loadProducts();
