@@ -321,10 +321,9 @@ async function addProduct(){
 
     alert("✅ Saved successfully!");
 
-  }catch(err){
-    console.error(err);
-    alert("Error saving product");
-  }
+catch(err){
+  console.error(err);
+  alert(err.message); // 🔥 SHOW REAL ERROR
 }
 
 /* PRODUCTS */
