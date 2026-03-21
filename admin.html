@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Dashboard</title>
 
@@ -10,11 +9,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Poppins;}
 
-body{
-  display:flex;
-  background:#f8f9fb;
-  color:#1a1a1a;
-}
+body{display:flex;background:#f8f9fb;}
 
 /* SIDEBAR */
 .sidebar{
@@ -25,74 +20,42 @@ body{
   border-right:1px solid #eee;
 }
 
-.sidebar h2{margin-bottom:20px;}
-.sidebar p{color:#777;margin-top:10px;}
-
 /* MAIN */
-.main{
-  flex:1;
-  padding:30px;
-}
+.main{flex:1;padding:30px;}
 
-/* HEADER */
 .header{
   display:flex;
   justify-content:space-between;
-  align-items:center;
-  margin-bottom:25px;
+  margin-bottom:20px;
 }
 
 .btn{
   padding:10px 18px;
-  border:none;
-  border-radius:30px;
   background:#111;
   color:white;
+  border:none;
+  border-radius:30px;
   cursor:pointer;
-  font-size:13px;
 }
 
 /* TABLE */
 .table{
   width:100%;
-  border-collapse:collapse;
   background:white;
   border-radius:15px;
   overflow:hidden;
-  box-shadow:0 5px 20px rgba(0,0,0,0.05);
+  margin-top:10px;
 }
 
-.table th{
-  background:#f4f4f4;
-  padding:14px;
-  font-weight:500;
-}
-
-.table td{
-  padding:14px;
-  border-top:1px solid #eee;
+.table th,.table td{
+  padding:12px;
+  border-bottom:1px solid #eee;
 }
 
 .table img{
   width:50px;
-  height:50px;
   border-radius:10px;
-  object-fit:cover;
 }
-
-/* ACTION */
-.action-btn{
-  padding:6px 12px;
-  border:none;
-  border-radius:20px;
-  margin-right:5px;
-  cursor:pointer;
-  font-size:12px;
-}
-
-.edit{background:#e0ecff;color:#2563eb;}
-.delete{background:#ffe4e4;color:#dc2626;}
-.done{background:#e6ffec;color:#16a34a;}
 
 /* MODAL */
 .modal{
@@ -102,26 +65,22 @@ body{
   display:none;
   justify-content:center;
   align-items:center;
-  background:rgba(0,0,0,0.4);
+  background:rgba(0,0,0,0.5);
 }
 
 .modal-box{
   background:white;
-  padding:25px;
+  padding:20px;
   border-radius:15px;
   width:320px;
 }
 
-input,textarea,select{
-  width:100%;
-  padding:12px;
-  margin:8px 0;
-  border:1px solid #ddd;
-  border-radius:10px;
+/* ORDER ITEMS */
+.order-item{
+  border-bottom:1px solid #eee;
+  padding:6px 0;
+  font-size:13px;
 }
-
-/* TITLE */
-h2{margin-bottom:15px;}
 </style>
 </head>
 
@@ -134,172 +93,217 @@ h2{margin-bottom:15px;}
 
 <div class="main">
 
-  <div class="header">
-    <h2>Products</h2>
-    <div>
-      <button class="btn" onclick="openAdd()">+ Add</button>
-      <button class="btn" onclick="logout()">Logout</button>
-    </div>
-  </div>
+<div class="header">
+  <h2>Products</h2>
+  <button class="btn" onclick="openAdd()">+ Add</button>
+</div>
 
-  <!-- PRODUCTS -->
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Image</th>
-        <th>Name</th>
-        <th>Description</th>
-        <th>Price</th>
-        <th>Stock</th>
-        <th>Type</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody id="productTable"></tbody>
-  </table>
+<table class="table">
+<thead>
+<tr>
+<th>Image</th>
+<th>Name</th>
+<th>Desc</th>
+<th>Price</th>
+<th>Stock</th>
+<th>Type</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="productTable"></tbody>
+</table>
 
-  <!-- ORDERS -->
-  <h2 style="margin-top:30px;">Orders</h2>
+<h2 style="margin-top:30px;">Orders</h2>
 
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Customer</th>
-        <th>Items</th>
-        <th>Total</th>
-        <th>Status</th>
-        <th>Proof</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody id="orderTable"></tbody>
-  </table>
+<table class="table">
+<thead>
+<tr>
+<th>Customer</th>
+<th>Items</th>
+<th>Total</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="orderTable"></tbody>
+</table>
 
 </div>
 
-<!-- ADD MODAL -->
+<!-- ADD -->
 <div id="addModal" class="modal">
-  <div class="modal-box">
-    <h3>Add Product</h3>
-    <input id="name" placeholder="Name">
-    <input id="price" placeholder="Price">
-    <input id="stock" placeholder="Stock">
-    <textarea id="desc" placeholder="Description"></textarea>
-    <select id="type">
-      <option value="digital">Digital</option>
-      <option value="physical">On-Hand</option>
-    </select>
-    <input type="file" id="imageFile">
-    <button class="btn" onclick="addProduct()">Save</button>
-  </div>
+<div class="modal-box">
+<h3>Add Product</h3>
+<input id="name" placeholder="Name">
+<input id="price" placeholder="Price">
+<input id="stock" placeholder="Stock">
+<textarea id="desc" placeholder="Description"></textarea>
+<select id="type">
+<option value="digital">Digital</option>
+<option value="physical">On-Hand</option>
+</select>
+<input id="download" placeholder="Download Link (digital)">
+<input type="file" id="imageFile">
+<button class="btn" onclick="addProduct()">Save</button>
+</div>
 </div>
 
-<!-- EDIT MODAL -->
-<div id="editModal" class="modal">
-  <div class="modal-box">
-    <h3>Edit Product</h3>
-    <input id="eName">
-    <input id="ePrice">
-    <input id="eStock">
-    <textarea id="eDesc"></textarea>
-    <button class="btn" onclick="updateProduct()">Update</button>
-  </div>
+<!-- ORDER MODAL -->
+<div id="orderModal" class="modal">
+<div class="modal-box" style="width:400px;">
+<h3>Order Details</h3>
+<div id="orderDetails"></div>
+<button class="btn" onclick="orderModal.style.display='none'">Close</button>
+</div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { 
+getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSy...",
-  authDomain: "craftstudio-75508.firebaseapp.com",
-  projectId: "craftstudio-75508",
-};
+const app = initializeApp({
+apiKey:"AIzaSy...",
+projectId:"craftstudio-75508"
+});
 
-const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
-const auth = getAuth(app);
-
-let currentId = "";
 
 /* ADD */
-window.openAdd = ()=> addModal.style.display="flex";
+window.openAdd=()=>addModal.style.display="flex";
 
-async function addProduct(){
-  const file = imageFile.files[0];
-  const refStorage = ref(storage,"products/"+Date.now());
-  await uploadBytes(refStorage,file);
-  const url = await getDownloadURL(refStorage);
+window.addProduct=async()=>{
+const file=imageFile.files[0];
+const refS=ref(storage,"products/"+Date.now());
+await uploadBytes(refS,file);
+const url=await getDownloadURL(refS);
 
-  await addDoc(collection(db,"products"),{
-    name:name.value,
-    price:Number(price.value),
-    stock:Number(stock.value),
-    desc:desc.value,
-    type:type.value,
-    image:url
-  });
+await addDoc(collection(db,"products"),{
+name:name.value,
+price:+price.value,
+stock:+stock.value,
+desc:desc.value,
+type:type.value,
+download:download.value,
+image:url
+});
 
-  location.reload();
-}
-window.addProduct = addProduct;
+location.reload();
+};
 
-/* LOAD PRODUCTS */
+/* PRODUCTS */
 async function loadProducts(){
-  const data = await getDocs(collection(db,"products"));
+productTable.innerHTML="";
+const data=await getDocs(collection(db,"products"));
 
-  data.forEach(d=>{
-    const p = d.data();
+data.forEach(d=>{
+const p=d.data();
 
-    productTable.innerHTML += `
-      <tr>
-        <td><img src="${p.image}"></td>
-        <td>${p.name}</td>
-        <td>${p.desc}</td>
-        <td>₱${p.price}</td>
-        <td>${p.stock}</td>
-        <td>${p.type}</td>
-        <td>
-          <button class="action-btn edit" onclick='edit("${d.id}", ${JSON.stringify(p)})'>Edit</button>
-          <button class="action-btn delete" onclick="del('${d.id}')">Delete</button>
-        </td>
-      </tr>
-    `;
-  });
+productTable.innerHTML+=`
+<tr>
+<td><img src="${p.image}"></td>
+<td>${p.name}</td>
+<td>${p.desc}</td>
+<td>₱${p.price}</td>
+<td>${p.stock}</td>
+<td>${p.type}</td>
+<td>
+<button onclick="del('${d.id}')">Delete</button>
+</td>
+</tr>`;
+});
 }
 
-/* LOAD ORDERS */
+/* ORDERS */
 async function loadOrders(){
-  const data = await getDocs(collection(db,"orders"));
+orderTable.innerHTML="";
+const data=await getDocs(collection(db,"orders"));
 
-  data.forEach(d=>{
-    const o = d.data();
+data.forEach(d=>{
+const o=d.data();
 
-    let items="";
-    o.items.forEach(i=>{
-      items += `${i.name} x${i.qty}<br>`;
-    });
+let items="";
+o.items?.forEach(i=>{
+items+=`${i.name} x${i.qty}<br>`;
+});
 
-    orderTable.innerHTML += `
-      <tr>
-        <td>${o.customer.name}</td>
-        <td>${items}</td>
-        <td>₱${o.total}</td>
-        <td>${o.status}</td>
-        <td><img src="${o.proof}" style="width:50px"></td>
-        <td>
-          <button class="action-btn done" onclick="done('${d.id}')">Done</button>
-          <button class="action-btn delete" onclick="delOrder('${d.id}')">Delete</button>
-        </td>
-      </tr>
-    `;
-  });
+orderTable.innerHTML+=`
+<tr onclick='viewOrder(${JSON.stringify(o)})'>
+<td>${o.customer?.name||"N/A"}</td>
+<td>${items}</td>
+<td>₱${o.total}</td>
+<td>${o.status}</td>
+<td>
+<button onclick="event.stopPropagation();done('${d.id}')">Done</button>
+<button onclick="event.stopPropagation();delOrder('${d.id}')">Delete</button>
+</td>
+</tr>`;
+});
 }
 
-/* INIT */
+/* VIEW */
+window.viewOrder=(o)=>{
+let html="";
+
+html+=`<b>${o.customer?.name||""}</b><br>`;
+
+o.items?.forEach(i=>{
+html+=`<div class="order-item">${i.name} x${i.qty}</div>`;
+});
+
+if(o.downloads){
+html+="<h4>Downloads</h4>";
+o.downloads.forEach(d=>{
+html+=`<a href="${d.link}" target="_blank">${d.name}</a><br>`;
+});
+}
+
+orderDetails.innerHTML=html;
+orderModal.style.display="flex";
+};
+
+/* DONE (AUTO DIGITAL) */
+window.done=async(id)=>{
+const refO=doc(db,"orders",id);
+const snap=await getDoc(refO);
+const order=snap.data();
+
+const prods=await getDocs(collection(db,"products"));
+
+let downloads=[];
+
+prods.forEach(p=>{
+const data=p.data();
+const match=order.items.find(i=>i.name===data.name);
+
+if(match && data.type==="digital"){
+downloads.push({name:data.name,link:data.download});
+}
+});
+
+await updateDoc(refO,{
+status:"completed",
+downloads
+});
+
+alert("Done + delivered!");
+location.reload();
+};
+
+/* DELETE */
+window.del=async(id)=>{
+await deleteDoc(doc(db,"products",id));
+location.reload();
+};
+
+window.delOrder=async(id)=>{
+await deleteDoc(doc(db,"orders",id));
+location.reload();
+};
+
 loadProducts();
 loadOrders();
 </script>
