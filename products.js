@@ -2,7 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC4WQfNT3x6MFRftIlKPlfLcYMoY4juIhM",
+  apiKey: "AIzaSy...",
   authDomain: "craftstudio-75508.firebaseapp.com",
   projectId: "craftstudio-75508",
 };
@@ -14,25 +14,23 @@ async function loadProducts(){
   const digital = document.getElementById("digital");
   const physical = document.getElementById("physical");
 
-  const querySnapshot = await getDocs(collection(db,"products"));
+  const data = await getDocs(collection(db,"products"));
 
-  querySnapshot.forEach(doc=>{
+  data.forEach(doc=>{
     const p = doc.data();
 
-const html = `
-  <div class="product">
-    <img src="${p.image}">
-    <h3>${p.name}</h3>
-    <p>₱${p.price}</p>
-    <button onclick='addToCart(${JSON.stringify(p)})'>Add to Cart</button>
-  </div>
-`;
+    const html = `
+      <div>
+        <img src="${p.image}" width="150">
+        <h3>${p.name}</h3>
+        <p>₱${p.price}</p>
+        <button onclick='addToCart(${JSON.stringify(p)})'>Add to Cart</button>
+      </div>
+    `;
 
-    if(p.type==="digital") digital.innerHTML += html;
-    else physical.innerHTML += html;
+    if(p.type==="digital") digital.innerHTML+=html;
+    else physical.innerHTML+=html;
   });
 }
 
 loadProducts();
-
-

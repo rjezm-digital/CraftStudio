@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Signup</h2>
+
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<button onclick="signup()">Signup</button>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSy...",
+  authDomain: "craftstudio-75508.firebaseapp.com",
+  projectId: "craftstudio-75508",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+async function signup(){
+  await createUserWithEmailAndPassword(auth,email.value,password.value);
+  alert("Account created!");
+  window.location.href="user-login.html";
+}
+
+window.signup = signup;
+</script>
+
+</body>
+</html>

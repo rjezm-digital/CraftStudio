@@ -1,25 +1,134 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cart</title>
+<title>Checkout</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
-body{font-family:Poppins;padding:20px;}
-.item{border-bottom:1px solid #ddd;padding:10px 0;}
-button{padding:10px;background:black;color:white;border:none;}
+
+@media(max-width:768px){
+  nav{padding:15px;}
+  .hero h1{font-size:32px;}
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins;}
+
+body{background:#f6f7fb;}
+
+/* NAV */
+nav{
+  display:flex;
+  justify-content:space-between;
+  padding:20px 10%;
+  background:white;
+}
+
+nav a{text-decoration:none;margin-left:20px;color:#333;}
+
+/* LAYOUT */
+.container{
+  display:grid;
+  grid-template-columns:1.5fr 1fr;
+  gap:20px;
+  padding:40px 10%;
+}
+
+/* BOX */
+.box{
+  background:white;
+  padding:20px;
+  border-radius:15px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.05);
+}
+
+/* CART ITEMS */
+.item{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+
+/* INPUT */
+input{
+  width:100%;
+  padding:10px;
+  margin:10px 0;
+  border:1px solid #ddd;
+  border-radius:8px;
+}
+
+/* BUTTON */
+button{
+  width:100%;
+  padding:15px;
+  background:#111;
+  color:white;
+  border:none;
+  border-radius:30px;
+  cursor:pointer;
+}
+
+/* QR */
+.qr{
+  text-align:center;
+}
+.qr img{
+  width:180px;
+  margin:10px 0;
+}
+
+/* TOTAL */
+.total{
+  font-size:18px;
+  margin:15px 0;
+}
 </style>
 </head>
 
 <body>
 
-<h2>Your Cart</h2>
+<nav>
+  <div>RJEZM</div>
+  <div>
+    <a href="products.html">Shop</a>
+  </div>
+</nav>
 
-<div id="cartList"></div>
+<div class="container">
 
-<h3 id="total"></h3>
+  <!-- LEFT: SHIPPING -->
+  <div class="box">
+    <h3>Shipping Details 🚚</h3>
 
-<button onclick="checkout()">Checkout</button>
+    <input id="name" placeholder="Full Name">
+    <input id="phone" placeholder="Phone Number">
+    <input id="address" placeholder="Full Address">
+  </div>
+
+  <!-- RIGHT: ORDER -->
+  <div class="box">
+
+    <h3>Your Order 🛒</h3>
+    <div id="cartList"></div>
+
+    <div class="total" id="total"></div>
+
+    <!-- GCASH -->
+    <div class="qr">
+      <h4>Pay via GCash</h4>
+      <img src="images/gcash.jpg">
+      <p>Send payment then upload proof below</p>
+    </div>
+
+    <input type="file" id="proof">
+
+    <button onclick="checkout()">Place Order</button>
+
+  </div>
+
+</div>
 
 <script src="cart.js"></script>
 
@@ -27,27 +136,36 @@ button{padding:10px;background:black;color:white;border:none;}
 const cart = getCart();
 let total = 0;
 
-const list = document.getElementById("cartList");
+cart.forEach((p,i)=>{
+  const subtotal = p.qty * Number(p.price);
+  total += subtotal;
 
-cart.forEach(p=>{
-  total += Number(p.price);
-
-  list.innerHTML += `
+  cartList.innerHTML += `
     <div class="item">
-      ${p.name} - ₱${p.price}
+      <div>
+        <b>${p.name}</b><br>
+        ₱${p.price} x ${p.qty} = ₱${subtotal}
+      </div>
+
+      <div>
+        <button onclick="decrease(${i})">-</button>
+        <button onclick="increase(${i})">+</button>
+        <button onclick="removeItem(${i})">❌</button>
+      </div>
     </div>
   `;
 });
 
-document.getElementById("total").innerText = "Total: ₱" + total;
+totalEl.innerText = "Total: ₱" + total;
 </script>
 
+<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC4WQfNT3x6MFRftIlKPlfLcYMoY4juIhM",
+  apiKey: "AIzaSy...",
   authDomain: "craftstudio-75508.firebaseapp.com",
   projectId: "craftstudio-75508",
 };
@@ -56,6 +174,16 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 async function checkout(){
+
+  const name = document.getElementById("name").value;
+  const phone = document.getElementById("phone").value;
+  const address = document.getElementById("address").value;
+
+  if(!name || !phone || !address){
+    alert("Fill shipping details");
+    return;
+  }
+
   const cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
   if(cart.length === 0){
@@ -64,22 +192,20 @@ async function checkout(){
   }
 
   await addDoc(collection(db,"orders"),{
+    customer:{name,phone,address},
     items: cart,
-    date: new Date().toISOString()
+    total: cart.reduce((t,p)=>t+Number(p.price),0),
+    status:"pending",
+    date:new Date().toISOString()
   });
 
-  alert("Order placed!");
-
+  alert("✅ Order placed! Please wait for confirmation.");
   localStorage.removeItem("cart");
   location.reload();
 }
 
 window.checkout = checkout;
 </script>
-
-<h3>Pay via GCash</h3>
-<img src="images/gcash.jpg" width="200">
-<p>Send payment then confirm via chat.</p>
 
 </body>
 </html>

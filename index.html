@@ -7,7 +7,26 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
+
 <style>
+
+@media(max-width:768px){
+  nav{padding:15px;}
+  .hero h1{font-size:32px;}
+}
+
+.item button{
+  margin:3px;
+  padding:6px 10px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.item button:nth-child(1){background:#ddd;} /* - */
+.item button:nth-child(2){background:#111;color:white;} /* + */
+.item button:nth-child(3){background:red;color:white;} /* remove */
+
 *{
   margin:0;
   padding:0;
@@ -198,9 +217,10 @@ footer{
 <nav>
   <h1>RJEZM STUDIO</h1>
   <div>
-    <a href="index.html">Home</a>
-    <a href="products.html">Shop</a>
-    <a href="cart.html">Cart 🛒</a>
+   <a href="index.html">Home</a>
+  <a href="products.html">Shop</a>
+  <a href="user-login.html">Login</a>
+  <a href="cart.html">Cart 🛒 (<span id="cartCount">0</span>)</a>
   </div>
 </nav>
 

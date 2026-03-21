@@ -7,6 +7,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
+
+@media(max-width:768px){
+  nav{padding:15px;}
+  .hero h1{font-size:32px;}
+}
+
 *{margin:0;padding:0;box-sizing:border-box;font-family:Poppins;}
 
 body{display:flex;background:#f5f6fa;}
@@ -100,6 +106,21 @@ input,select{
     <tbody id="productList"></tbody>
   </table>
 
+<h2 style="margin-top:40px;">Orders</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Customer</th>
+      <th>Items</th>
+      <th>Total</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody id="orderList"></tbody>
+</table>
+
 </div>
 
 <!-- MODAL -->
@@ -119,7 +140,8 @@ input,select{
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, getDocs, updateDoc, doc, deleteDoc } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
@@ -143,6 +165,17 @@ function openModal(){
 }
 window.openModal = openModal;
 
+async function updateStatus(id, status){
+  await updateDoc(doc(db, "orders", id), {
+    status: status
+  });
+
+  alert("Status updated!");
+  loadOrders();
+}
+
+window.updateStatus = updateStatus;
+
 // ADD PRODUCT
 async function addProduct(){
   const name = nameInput.value;
@@ -155,6 +188,15 @@ async function addProduct(){
   location.reload();
 }
 window.addProduct = addProduct;
+
+async function deleteOrder(id){
+  if(confirm("Delete this order?")){
+    await deleteDoc(doc(db, "orders", id));
+    loadOrders();
+  }
+}
+
+window.deleteOrder = deleteOrder;
 
 // LOGOUT
 function logout(){
@@ -182,6 +224,46 @@ async function loadProducts(){
 }
 
 loadProducts();
+
+async function loadOrders(){
+  const list = document.getElementById("orderList");
+  list.innerHTML = "";
+
+  const querySnapshot = await getDocs(collection(db,"orders"));
+
+  querySnapshot.forEach((docSnap)=>{
+    const o = docSnap.data();
+    const id = docSnap.id;
+
+    let items = "";
+    o.items.forEach(i=>{
+      items += `${i.name} x${i.qty}<br>`;
+    });
+
+    list.innerHTML += `
+      <tr>
+        <td>
+          ${o.customer.name}<br>
+          ${o.customer.phone}
+        </td>
+
+        <td>${items}</td>
+
+        <td>₱${o.total}</td>
+
+        <td>${o.status}</td>
+
+        <td>
+          <button onclick="updateStatus('${id}','paid')">Paid</button>
+          <button onclick="updateStatus('${id}','shipped')">Ship</button>
+          <button onclick="deleteOrder('${id}')">Delete</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+loadOrders();
 </script>
 
 </body>
