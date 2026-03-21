@@ -261,71 +261,81 @@ window.logout = async()=>{
 };
 
 /* ADD PRODUCT */
-async function addProduct(){
-  try{
-    const nameVal = name.value.trim();
-    const priceVal = price.value.trim();
-    const stockVal = stock.value.trim();
-    const descVal = desc.value.trim();
-    const typeVal = type.value;
-    const downloadVal = download.value;
-    const file = imageFile.files[0];
+window.addProduct = async () => {
+  const btn = document.querySelector("#addModal button");
 
-    if(!nameVal || !priceVal || !stockVal){
-      alert("Fill all fields");
-      return;
+  try {
+    // 🔒 Prevent multiple clicks
+    btn.innerText = "Saving...";
+    btn.disabled = true;
+
+    // 📥 Get values
+    const nameVal = document.getElementById("name").value.trim();
+    const priceVal = document.getElementById("price").value.trim();
+    const stockVal = document.getElementById("stock").value.trim();
+    const descVal = document.getElementById("desc").value.trim();
+    const typeVal = document.getElementById("type").value;
+    const downloadVal = document.getElementById("download").value.trim();
+    const file = document.getElementById("imageFile").files[0];
+
+    // 🛑 Validation
+    if (!nameVal || !priceVal || !stockVal) {
+      throw new Error("Please fill all required fields");
     }
-
-    // 🔥 INSTANT UI ADD (no waiting)
-    productTable.innerHTML += `
-      <tr>
-        <td>Uploading...</td>
-        <td>${nameVal}</td>
-        <td>${descVal}</td>
-        <td>₱${priceVal}</td>
-        <td>${stockVal}</td>
-        <td>${typeVal}</td>
-        <td>...</td>
-      </tr>
-    `;
-
-    addModal.style.display="none";
 
     let imageURL = "";
 
-    // ✅ OPTIONAL IMAGE UPLOAD
-    if(file){
-      try{
-        const storageRef = ref(storage,"products/"+Date.now());
-        await uploadBytes(storageRef,file);
+    // 📤 Upload image (optional)
+    if (file) {
+      try {
+        const storageRef = ref(storage, "products/" + Date.now());
+        await uploadBytes(storageRef, file);
         imageURL = await getDownloadURL(storageRef);
-      }catch(e){
-        console.log("Image upload failed, continue without image");
+      } catch (imgErr) {
+        console.warn("Image upload failed:", imgErr);
+        alert("Image failed to upload. Product will still save.");
       }
     }
 
-    // ✅ SAVE TO FIRESTORE (MAIN SAVE)
-    await addDoc(collection(db,"products"),{
+    // 💾 Save to Firestore
+    await addDoc(collection(db, "products"), {
       name: nameVal,
       price: Number(priceVal),
       stock: Number(stockVal),
-      desc: descVal,
+      desc: descVal || "",
       type: typeVal,
-      download: downloadVal,
+      download: downloadVal || "",
       image: imageURL,
       createdAt: Date.now()
     });
 
-    // 🔄 REFRESH REAL DATA
+    // ✅ Success
+    alert("✅ Product saved!");
+
+    // 🔄 Reset form
+    document.getElementById("name").value = "";
+    document.getElementById("price").value = "";
+    document.getElementById("stock").value = "";
+    document.getElementById("desc").value = "";
+    document.getElementById("download").value = "";
+    document.getElementById("imageFile").value = "";
+
+    // Close modal
+    addModal.style.display = "none";
+
+    // Reload products
     loadProducts();
 
-    alert("✅ Saved successfully!");
+  } catch (err) {
+    console.error("ERROR:", err);
+    alert("❌ " + err.message);
 
-  catch(err){
-  console.error(err);
-  alert(err.message); // 🔥 SHOW REAL ERROR
-}
-}
+  } finally {
+    // 🔓 Restore button
+    btn.innerText = "Save Product";
+    btn.disabled = false;
+  }
+};
 
 /* PRODUCTS */
 async function loadProducts(){
