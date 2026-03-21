@@ -20,13 +20,14 @@ async function loadProducts(){
     const p = doc.data();
 
     const html = `
-      <div>
-        <img src="${p.image}" width="150">
-        <h3>${p.name}</h3>
-        <p>₱${p.price}</p>
-        <button onclick='addToCart(${JSON.stringify(p)})'>Add to Cart</button>
-      </div>
-    `;
+  <div class="product">
+    <img src="${p.image}">
+    <h3>${p.name}</h3>
+    <p>${p.desc || ""}</p>
+    <p>₱${p.price}</p>
+    <button onclick='addToCart(${JSON.stringify(p)})'>Add to Cart</button>
+  </div>
+`;
 
     if(p.type==="digital") digital.innerHTML+=html;
     else physical.innerHTML+=html;

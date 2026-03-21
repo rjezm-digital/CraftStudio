@@ -9,67 +9,93 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Poppins;}
 
-body{background:#f6f7fb;}
+body{background:#f5f5f5;}
+
+/* BLUR */
+.locked{
+  filter:blur(6px);
+  pointer-events:none;
+}
 
 /* NAV */
 nav{
+  background:white;
+  padding:15px 10%;
   display:flex;
   justify-content:space-between;
-  padding:20px 10%;
-  background:white;
-  box-shadow:0 2px 10px rgba(0,0,0,0.05);
+  border-bottom:1px solid #eee;
 }
 
 /* LAYOUT */
 .container{
   display:grid;
-  grid-template-columns:1.5fr 1fr;
+  grid-template-columns:2fr 1fr;
   gap:20px;
-  padding:40px 10%;
+  padding:30px 10%;
 }
 
-/* BOX */
-.box{
+/* LEFT SECTION */
+.section{
   background:white;
-  padding:25px;
-  border-radius:20px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.05);
+  padding:20px;
+  border-radius:10px;
+  margin-bottom:15px;
 }
 
 /* ITEM */
 .item{
   display:flex;
   justify-content:space-between;
-  align-items:center;
-  margin-bottom:15px;
-  padding:10px;
-  border-radius:12px;
-  background:#fafafa;
+  margin-top:15px;
+  border-bottom:1px solid #eee;
+  padding-bottom:10px;
 }
 
 .item-left{
   display:flex;
   gap:10px;
-  align-items:center;
 }
 
 .item img{
-  width:55px;
-  height:55px;
+  width:60px;
+  height:60px;
   border-radius:10px;
 }
 
-/* BUTTONS */
+/* QTY */
 .qty-btn{
   padding:5px 10px;
   border:none;
-  border-radius:6px;
+  border-radius:5px;
   cursor:pointer;
 }
 
 .minus{background:#ddd;}
-.plus{background:#111;color:white;}
+.plus{background:#ee4d2d;color:white;}
 .remove{background:red;color:white;}
+
+/* RIGHT SUMMARY */
+.summary{
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  position:sticky;
+  top:20px;
+  height:fit-content;
+}
+
+.summary h3{
+  margin-bottom:10px;
+}
+
+.summary p{
+  margin:8px 0;
+}
+
+.total{
+  font-size:18px;
+  font-weight:600;
+}
 
 /* INPUT */
 input{
@@ -77,87 +103,85 @@ input{
   padding:12px;
   margin:10px 0;
   border:1px solid #ddd;
-  border-radius:10px;
-}
-
-/* TOTAL BOX */
-.summary{
-  margin-top:15px;
-  padding:15px;
-  background:#f9f9f9;
-  border-radius:10px;
-}
-
-.summary p{
-  display:flex;
-  justify-content:space-between;
-  margin:5px 0;
+  border-radius:8px;
 }
 
 /* BUTTON */
 .checkout{
   width:100%;
   padding:15px;
-  background:#111;
+  background:#ee4d2d;
   color:white;
   border:none;
   border-radius:30px;
+  font-weight:600;
   margin-top:15px;
 }
 
-/* QR */
-.qr{text-align:center;}
-.qr img{width:180px;margin:10px 0;}
+/* LOGIN MODAL */
+.modal{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:rgba(0,0,0,0.5);
+}
 
+.modal-box{
+  background:white;
+  padding:25px;
+  border-radius:15px;
+  width:300px;
+  text-align:center;
+}
+
+/* MOBILE */
 @media(max-width:768px){
-  .container{grid-template-columns:1fr;padding:20px;}
+  .container{grid-template-columns:1fr;}
 }
 </style>
 </head>
 
 <body>
 
+<div id="mainContent">
+
 <nav>
-  <div>RJEZM</div>
+  <div><b>RJEZM Checkout</b></div>
   <a href="products.html">Shop</a>
 </nav>
 
 <div class="container">
 
-  <!-- SHIPPING -->
-  <div class="box">
-    <h3>Shipping Details 🚚</h3>
-    <input id="name" placeholder="Full Name">
-    <input id="phone" placeholder="Phone Number">
-    <input id="address" placeholder="Full Address">
+  <!-- LEFT -->
+  <div>
+
+    <!-- SHIPPING -->
+    <div class="section">
+      <h3>Shipping Details</h3>
+      <input id="name" placeholder="Full Name">
+      <input id="phone" placeholder="Phone">
+      <input id="address" placeholder="Address">
+    </div>
+
+    <!-- ITEMS -->
+    <div class="section">
+      <h3>Order Items</h3>
+      <div id="cartList"></div>
+    </div>
+
   </div>
 
-  <!-- ORDER -->
-  <div class="box">
+  <!-- RIGHT -->
+  <div class="summary">
 
-    <h3>Your Order 🛒</h3>
-    <div id="cartList"></div>
+    <h3>Order Summary</h3>
 
-    <!-- SUMMARY -->
-    <div class="summary">
-      <p><span>Subtotal</span><span id="subtotal"></span></p>
-      <p><span>Shipping</span><span id="shipping"></span></p>
-      <p><b>Total</b><b id="total"></b></p>
-    </div>
-
-    <!-- GCASH -->
-    <div class="qr">
-      <h4>Pay via GCash</h4>
-
-      <a href="https://gcash.app.link/pay" target="_blank">
-        <button style="background:#007dff;margin-bottom:10px;">Open GCash</button>
-      </a>
-
-      <img src="images/gcash.jpg">
-      <p>Upload proof after payment</p>
-    </div>
-
-    <input type="file" id="proof">
+    <p>Subtotal: <span id="subtotal"></span></p>
+    <p>Shipping: ₱50</p>
+    <p class="total">Total: <span id="total"></span></p>
 
     <button class="checkout" onclick="checkout()">Place Order</button>
 
@@ -165,74 +189,69 @@ input{
 
 </div>
 
+</div>
+
+<!-- LOGIN -->
+<div id="loginModal" class="modal" style="display:none;">
+  <div class="modal-box">
+    <h3>Login Required</h3>
+
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+
+    <button onclick="login()">Login</button>
+
+    <p style="font-size:12px;margin-top:10px;">
+      No account? <a href="user-signup.html">Sign up</a>
+    </p>
+  </div>
+</div>
+
 <script src="cart.js"></script>
 
-<!-- 🔐 LOGIN CHECK -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSy...",
-  authDomain: "craftstudio-75508.firebaseapp.com",
-  projectId: "craftstudio-75508",
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-onAuthStateChanged(auth, (user)=>{
-  if(!user){
-    alert("Login first!");
-    window.location.href = "user-login.html";
-  }
-});
-</script>
-
-<!-- CART DISPLAY -->
 <script>
-const cart = getCart();
+// RENDER CART
+function renderCart(){
 
-let subtotal = 0;
-const SHIPPING = 50;
+  const cart = getCart();
+  let subtotal = 0;
 
-if(cart.length === 0){
-  cartList.innerHTML = "<p>Your cart is empty</p>";
-}
+  cartList.innerHTML = "";
 
-cart.forEach((p,i)=>{
-  const sub = p.qty * Number(p.price);
-  subtotal += sub;
+  cart.forEach((p,i)=>{
+    const sub = p.qty * p.price;
+    subtotal += sub;
 
-  cartList.innerHTML += `
-    <div class="item">
-      <div class="item-left">
-        <img src="${p.image}">
+    cartList.innerHTML += `
+      <div class="item">
+        <div class="item-left">
+          <img src="${p.image}">
+          <div>
+            <b>${p.name}</b><br>
+            ₱${p.price} x ${p.qty}
+          </div>
+        </div>
+
         <div>
-          <b>${p.name}</b><br>
-          ₱${p.price} x ${p.qty} = ₱${sub}
+          <button class="qty-btn minus" onclick="decrease(${i});renderCart()">-</button>
+          <button class="qty-btn plus" onclick="increase(${i});renderCart()">+</button>
+          <button class="qty-btn remove" onclick="removeItem(${i});renderCart()">✕</button>
         </div>
       </div>
+    `;
+  });
 
-      <div>
-        <button class="qty-btn minus" onclick="decrease(${i})">-</button>
-        <button class="qty-btn plus" onclick="increase(${i})">+</button>
-        <button class="qty-btn remove" onclick="removeItem(${i})">✕</button>
-      </div>
-    </div>
-  `;
-});
+  subtotalEl.innerText = "₱" + subtotal;
+  totalEl.innerText = "₱" + (subtotal + 50);
+}
 
-document.getElementById("subtotal").innerText = "₱" + subtotal;
-document.getElementById("shipping").innerText = "₱" + SHIPPING;
-document.getElementById("total").innerText = "₱" + (subtotal + SHIPPING);
+renderCart();
 </script>
 
-<!-- FIREBASE CHECKOUT -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+import { getFirestore, collection, addDoc, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSy...",
@@ -242,48 +261,77 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const storage = getStorage(app);
+const auth = getAuth(app);
 
-async function checkout(){
+let currentUser = null;
 
-  const name = nameInput.value;
-  const phone = phoneInput.value;
-  const address = addressInput.value;
-  const file = proof.files[0];
+// LOGIN CHECK
+onAuthStateChanged(auth, (user)=>{
+  if(!user){
+    loginModal.style.display = "flex";
+    mainContent.classList.add("locked");
+  } else {
+    currentUser = user;
+    loginModal.style.display = "none";
+    mainContent.classList.remove("locked");
+  }
+});
 
-  if(!name || !phone || !address){
-    alert("Fill shipping details");
+// LOGIN
+window.login = async()=>{
+  try{
+    await signInWithEmailAndPassword(auth,email.value,password.value);
+  }catch{
+    alert("Login failed");
+  }
+};
+
+// CHECKOUT
+let isProcessing = false;
+
+window.checkout = async()=>{
+
+  if(!currentUser){
+    alert("Login first");
     return;
   }
 
-  if(!file){
-    alert("Upload proof of payment");
-    return;
-  }
+  if(isProcessing) return;
+  isProcessing = true;
 
-  const storageRef = ref(storage, "proofs/" + Date.now());
-  await uploadBytes(storageRef, file);
-  const proofURL = await getDownloadURL(storageRef);
+  const btn = document.querySelector(".checkout");
+  btn.innerText = "Processing...";
+  btn.disabled = true;
 
-  const cart = getCart();
+  try{
 
-  await addDoc(collection(db,"orders"),{
-    customer:{name,phone,address},
-    items: cart,
-    proof: proofURL,
-    subtotal: cart.reduce((t,p)=>t+p.qty*Number(p.price),0),
-    shipping: 50,
-    total: cart.reduce((t,p)=>t+p.qty*Number(p.price),0) + 50,
-    status:"pending",
-    createdAt: Date.now()
-  });
+    const cart = getCart();
 
-  alert("✅ Order placed!");
-  localStorage.removeItem("cart");
-  location.reload();
-}
+    if(cart.length === 0){
+      alert("Cart empty");
+      throw "";
+    }
 
-window.checkout = checkout;
+    const subtotal = cart.reduce((t,p)=>t+p.qty*p.price,0);
+    const total = subtotal + 50;
+
+    await addDoc(collection(db,"orders"),{
+      userId: currentUser.uid,
+      items: cart,
+      total,
+      status:"pending"
+    });
+
+    alert("Order placed!");
+    localStorage.removeItem("cart");
+    location.reload();
+
+  }catch{}
+
+  isProcessing = false;
+  btn.innerText = "Place Order";
+  btn.disabled = false;
+};
 </script>
 
 </body>
