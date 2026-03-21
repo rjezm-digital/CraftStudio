@@ -268,13 +268,13 @@ window.addProduct = async () => {
     btn.innerText = "Saving...";
     btn.disabled = true;
 
-    const nameVal = name.value.trim();
-    const priceVal = price.value.trim();
-    const stockVal = stock.value.trim();
-    const descVal = desc.value.trim();
-    const typeVal = type.value;
-    const downloadVal = download.value.trim();
-    const file = imageFile.files[0];
+    const nameVal = document.getElementById("name").value.trim();
+const priceVal = document.getElementById("price").value.trim();
+const stockVal = document.getElementById("stock").value.trim();
+const descVal = document.getElementById("desc").value.trim();
+const typeVal = document.getElementById("type").value;
+const downloadVal = document.getElementById("download").value.trim();
+const file = document.getElementById("imageFile").files[0];
 
     if (!nameVal || !priceVal || !stockVal) {
       throw new Error("Fill required fields");
