@@ -265,39 +265,44 @@ window.addProduct = async () => {
   const btn = document.querySelector("#addModal button");
 
   try {
-    // 🔒 Prevent multiple clicks
     btn.innerText = "Saving...";
     btn.disabled = true;
 
-    // 📥 Get values
-    const nameVal = document.getElementById("name").value.trim();
-    const priceVal = document.getElementById("price").value.trim();
-    const stockVal = document.getElementById("stock").value.trim();
-    const descVal = document.getElementById("desc").value.trim();
-    const typeVal = document.getElementById("type").value;
-    const downloadVal = document.getElementById("download").value.trim();
-    const file = document.getElementById("imageFile").files[0];
+    const nameVal = name.value.trim();
+    const priceVal = price.value.trim();
+    const stockVal = stock.value.trim();
+    const descVal = desc.value.trim();
+    const typeVal = type.value;
+    const downloadVal = download.value.trim();
+    const file = imageFile.files[0];
 
-    // 🛑 Validation
     if (!nameVal || !priceVal || !stockVal) {
-      throw new Error("Please fill all required fields");
+      throw new Error("Fill required fields");
     }
 
     let imageURL = "";
 
-    // 📤 Upload image (optional)
+    // 🔥 SAFE IMAGE UPLOAD (WITH TIMEOUT)
     if (file) {
       try {
         const storageRef = ref(storage, "products/" + Date.now());
-        await uploadBytes(storageRef, file);
+
+        const uploadPromise = uploadBytes(storageRef, file);
+        const timeout = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Upload timeout")), 10000)
+        );
+
+        await Promise.race([uploadPromise, timeout]);
+
         imageURL = await getDownloadURL(storageRef);
-      } catch (imgErr) {
-        console.warn("Image upload failed:", imgErr);
-        alert("Image failed to upload. Product will still save.");
+
+      } catch (e) {
+        console.warn("Upload skipped:", e.message);
+        alert("⚠️ Image skipped. Saving without image.");
       }
     }
 
-    // 💾 Save to Firestore
+    // 💾 SAVE (THIS MUST ALWAYS RUN)
     await addDoc(collection(db, "products"), {
       name: nameVal,
       price: Number(priceVal),
@@ -309,29 +314,16 @@ window.addProduct = async () => {
       createdAt: Date.now()
     });
 
-    // ✅ Success
-    alert("✅ Product saved!");
+    alert("✅ Saved!");
 
-    // 🔄 Reset form
-    document.getElementById("name").value = "";
-    document.getElementById("price").value = "";
-    document.getElementById("stock").value = "";
-    document.getElementById("desc").value = "";
-    document.getElementById("download").value = "";
-    document.getElementById("imageFile").value = "";
-
-    // Close modal
     addModal.style.display = "none";
-
-    // Reload products
     loadProducts();
 
   } catch (err) {
-    console.error("ERROR:", err);
+    console.error("REAL ERROR:", err);
     alert("❌ " + err.message);
 
   } finally {
-    // 🔓 Restore button
     btn.innerText = "Save Product";
     btn.disabled = false;
   }
