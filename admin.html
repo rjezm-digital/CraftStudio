@@ -186,7 +186,7 @@ body{
     </select>
     <input id="download" placeholder="Download link (digital)">
     <input type="file" id="imageFile">
-    <button onclick="addProduct()">Save Product</button>
+    <button id="saveBtn">Save Product</button>
   </div>
 </div>
 
@@ -261,34 +261,66 @@ window.logout = async()=>{
 };
 
 /* ADD PRODUCT */
-window.addProduct = async()=>{
+async function addProduct(){
   try{
-    const file = imageFile.files[0];
-    if(!file) return alert("Upload image");
+    console.log("🔥 Save clicked");
 
+    const nameVal = document.getElementById("name").value.trim();
+    const priceVal = document.getElementById("price").value.trim();
+    const stockVal = document.getElementById("stock").value.trim();
+    const descVal = document.getElementById("desc").value.trim();
+    const typeVal = document.getElementById("type").value;
+    const downloadVal = document.getElementById("download").value;
+    const file = document.getElementById("imageFile").files[0];
+
+    // ✅ VALIDATION
+    if(!nameVal || !priceVal || !stockVal){
+      alert("Fill all required fields");
+      return;
+    }
+
+    if(!file){
+      alert("Upload image");
+      return;
+    }
+
+    // 🔄 UI feedback
+    const btn = document.getElementById("saveBtn");
+    btn.innerText = "Saving...";
+    btn.disabled = true;
+
+    // 📤 upload image
     const storageRef = ref(storage,"products/"+Date.now());
     await uploadBytes(storageRef,file);
     const imageURL = await getDownloadURL(storageRef);
 
+    // 💾 save
     await addDoc(collection(db,"products"),{
-      name: name.value,
-      price: Number(price.value),
-      stock: Number(stock.value),
-      desc: desc.value || "",
-      type: type.value,
-      download: download.value || "",
-      image: imageURL
+      name: nameVal,
+      price: Number(priceVal),
+      stock: Number(stockVal),
+      desc: descVal,
+      type: typeVal,
+      download: downloadVal,
+      image: imageURL,
+      createdAt: Date.now()
     });
 
-    alert("Saved!");
+    alert("✅ Product saved!");
+
     addModal.style.display="none";
+
+    // reload table (NO refresh)
     loadProducts();
+
+    btn.innerText = "Save Product";
+    btn.disabled = false;
 
   }catch(err){
     console.error(err);
-    alert("Error saving product");
+    alert("❌ Failed to save");
   }
-};
+}
 
 /* PRODUCTS */
 async function loadProducts(){
@@ -331,6 +363,8 @@ async function loadOrders(){
     </tr>`;
   });
 }
+
+document.getElementById("saveBtn").addEventListener("click", addProduct);
 
 /* VIEW ORDER */
 window.viewOrder = (o)=>{
