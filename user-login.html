@@ -1,12 +1,84 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins;}
+
+body{
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#1e1e2f,#3a3a6a);
+}
+
+/* CARD */
+.card{
+  background:rgba(255,255,255,0.1);
+  backdrop-filter:blur(20px);
+  padding:30px;
+  border-radius:20px;
+  width:320px;
+  color:white;
+  text-align:center;
+}
+
+h2{margin-bottom:20px;}
+
+/* INPUT */
+input{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border:none;
+  border-radius:10px;
+  outline:none;
+}
+
+/* BUTTON */
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:30px;
+  background:white;
+  color:black;
+  font-weight:600;
+  margin-top:10px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+button:hover{transform:scale(1.05);}
+
+/* LINK */
+a{
+  display:block;
+  margin-top:15px;
+  color:#ccc;
+  text-decoration:none;
+  font-size:14px;
+}
+</style>
+</head>
+
 <body>
 
-<h2>User Login</h2>
+<div class="card">
+  <h2>Welcome Back</h2>
 
-<input id="email" placeholder="Email">
-<input id="password" type="password">
-<button onclick="login()">Login</button>
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+
+  <button onclick="login()">Login</button>
+
+  <a href="user-signup.html">Create account</a>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -22,8 +94,12 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 async function login(){
-  await signInWithEmailAndPassword(auth,email.value,password.value);
-  window.location.href="products.html";
+  try{
+    await signInWithEmailAndPassword(auth,email.value,password.value);
+    window.location.href = "products.html";
+  }catch(e){
+    alert("Login failed");
+  }
 }
 
 window.login = login;

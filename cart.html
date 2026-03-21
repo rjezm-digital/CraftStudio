@@ -7,12 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
-
-@media(max-width:768px){
-  nav{padding:15px;}
-  .hero h1{font-size:32px;}
-}
-
 *{margin:0;padding:0;box-sizing:border-box;font-family:Poppins;}
 
 body{background:#f6f7fb;}
@@ -23,9 +17,8 @@ nav{
   justify-content:space-between;
   padding:20px 10%;
   background:white;
+  box-shadow:0 2px 10px rgba(0,0,0,0.05);
 }
-
-nav a{text-decoration:none;margin-left:20px;color:#333;}
 
 /* LAYOUT */
 .container{
@@ -38,51 +31,86 @@ nav a{text-decoration:none;margin-left:20px;color:#333;}
 /* BOX */
 .box{
   background:white;
-  padding:20px;
-  border-radius:15px;
-  box-shadow:0 5px 15px rgba(0,0,0,0.05);
+  padding:25px;
+  border-radius:20px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.05);
 }
 
-/* CART ITEMS */
+/* ITEM */
 .item{
   display:flex;
   justify-content:space-between;
-  margin-bottom:10px;
+  align-items:center;
+  margin-bottom:15px;
+  padding:10px;
+  border-radius:12px;
+  background:#fafafa;
 }
+
+.item-left{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.item img{
+  width:55px;
+  height:55px;
+  border-radius:10px;
+}
+
+/* BUTTONS */
+.qty-btn{
+  padding:5px 10px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.minus{background:#ddd;}
+.plus{background:#111;color:white;}
+.remove{background:red;color:white;}
 
 /* INPUT */
 input{
   width:100%;
-  padding:10px;
+  padding:12px;
   margin:10px 0;
   border:1px solid #ddd;
-  border-radius:8px;
+  border-radius:10px;
+}
+
+/* TOTAL BOX */
+.summary{
+  margin-top:15px;
+  padding:15px;
+  background:#f9f9f9;
+  border-radius:10px;
+}
+
+.summary p{
+  display:flex;
+  justify-content:space-between;
+  margin:5px 0;
 }
 
 /* BUTTON */
-button{
+.checkout{
   width:100%;
   padding:15px;
   background:#111;
   color:white;
   border:none;
   border-radius:30px;
-  cursor:pointer;
+  margin-top:15px;
 }
 
 /* QR */
-.qr{
-  text-align:center;
-}
-.qr img{
-  width:180px;
-  margin:10px 0;
-}
+.qr{text-align:center;}
+.qr img{width:180px;margin:10px 0;}
 
-/* TOTAL */
-.total{
-  font-size:18px;
-  margin:15px 0;
+@media(max-width:768px){
+  .container{grid-template-columns:1fr;padding:20px;}
 }
 </style>
 </head>
@@ -91,40 +119,47 @@ button{
 
 <nav>
   <div>RJEZM</div>
-  <div>
-    <a href="products.html">Shop</a>
-  </div>
+  <a href="products.html">Shop</a>
 </nav>
 
 <div class="container">
 
-  <!-- LEFT: SHIPPING -->
+  <!-- SHIPPING -->
   <div class="box">
     <h3>Shipping Details 🚚</h3>
-
     <input id="name" placeholder="Full Name">
     <input id="phone" placeholder="Phone Number">
     <input id="address" placeholder="Full Address">
   </div>
 
-  <!-- RIGHT: ORDER -->
+  <!-- ORDER -->
   <div class="box">
 
     <h3>Your Order 🛒</h3>
     <div id="cartList"></div>
 
-    <div class="total" id="total"></div>
+    <!-- SUMMARY -->
+    <div class="summary">
+      <p><span>Subtotal</span><span id="subtotal"></span></p>
+      <p><span>Shipping</span><span id="shipping"></span></p>
+      <p><b>Total</b><b id="total"></b></p>
+    </div>
 
     <!-- GCASH -->
     <div class="qr">
       <h4>Pay via GCash</h4>
+
+      <a href="https://gcash.app.link/pay" target="_blank">
+        <button style="background:#007dff;margin-bottom:10px;">Open GCash</button>
+      </a>
+
       <img src="images/gcash.jpg">
-      <p>Send payment then upload proof below</p>
+      <p>Upload proof after payment</p>
     </div>
 
     <input type="file" id="proof">
 
-    <button onclick="checkout()">Place Order</button>
+    <button class="checkout" onclick="checkout()">Place Order</button>
 
   </div>
 
@@ -132,37 +167,72 @@ button{
 
 <script src="cart.js"></script>
 
+<!-- 🔐 LOGIN CHECK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSy...",
+  authDomain: "craftstudio-75508.firebaseapp.com",
+  projectId: "craftstudio-75508",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+onAuthStateChanged(auth, (user)=>{
+  if(!user){
+    alert("Login first!");
+    window.location.href = "user-login.html";
+  }
+});
+</script>
+
+<!-- CART DISPLAY -->
 <script>
 const cart = getCart();
-let total = 0;
+
+let subtotal = 0;
+const SHIPPING = 50;
+
+if(cart.length === 0){
+  cartList.innerHTML = "<p>Your cart is empty</p>";
+}
 
 cart.forEach((p,i)=>{
-  const subtotal = p.qty * Number(p.price);
-  total += subtotal;
+  const sub = p.qty * Number(p.price);
+  subtotal += sub;
 
   cartList.innerHTML += `
     <div class="item">
-      <div>
-        <b>${p.name}</b><br>
-        ₱${p.price} x ${p.qty} = ₱${subtotal}
+      <div class="item-left">
+        <img src="${p.image}">
+        <div>
+          <b>${p.name}</b><br>
+          ₱${p.price} x ${p.qty} = ₱${sub}
+        </div>
       </div>
 
       <div>
-        <button onclick="decrease(${i})">-</button>
-        <button onclick="increase(${i})">+</button>
-        <button onclick="removeItem(${i})">❌</button>
+        <button class="qty-btn minus" onclick="decrease(${i})">-</button>
+        <button class="qty-btn plus" onclick="increase(${i})">+</button>
+        <button class="qty-btn remove" onclick="removeItem(${i})">✕</button>
       </div>
     </div>
   `;
 });
 
-totalEl.innerText = "Total: ₱" + total;
+document.getElementById("subtotal").innerText = "₱" + subtotal;
+document.getElementById("shipping").innerText = "₱" + SHIPPING;
+document.getElementById("total").innerText = "₱" + (subtotal + SHIPPING);
 </script>
 
-<!-- FIREBASE -->
+<!-- FIREBASE CHECKOUT -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSy...",
@@ -172,34 +242,43 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 async function checkout(){
 
-  const name = document.getElementById("name").value;
-  const phone = document.getElementById("phone").value;
-  const address = document.getElementById("address").value;
+  const name = nameInput.value;
+  const phone = phoneInput.value;
+  const address = addressInput.value;
+  const file = proof.files[0];
 
   if(!name || !phone || !address){
     alert("Fill shipping details");
     return;
   }
 
-  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-
-  if(cart.length === 0){
-    alert("Cart is empty");
+  if(!file){
+    alert("Upload proof of payment");
     return;
   }
+
+  const storageRef = ref(storage, "proofs/" + Date.now());
+  await uploadBytes(storageRef, file);
+  const proofURL = await getDownloadURL(storageRef);
+
+  const cart = getCart();
 
   await addDoc(collection(db,"orders"),{
     customer:{name,phone,address},
     items: cart,
-    total: cart.reduce((t,p)=>t+Number(p.price),0),
+    proof: proofURL,
+    subtotal: cart.reduce((t,p)=>t+p.qty*Number(p.price),0),
+    shipping: 50,
+    total: cart.reduce((t,p)=>t+p.qty*Number(p.price),0) + 50,
     status:"pending",
-    date:new Date().toISOString()
+    createdAt: Date.now()
   });
 
-  alert("✅ Order placed! Please wait for confirmation.");
+  alert("✅ Order placed!");
   localStorage.removeItem("cart");
   location.reload();
 }

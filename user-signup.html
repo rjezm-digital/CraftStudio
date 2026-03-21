@@ -1,12 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signup</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins;}
+
+body{
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#2b5876,#4e4376);
+}
+
+.card{
+  background:rgba(255,255,255,0.1);
+  backdrop-filter:blur(20px);
+  padding:30px;
+  border-radius:20px;
+  width:320px;
+  color:white;
+  text-align:center;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border:none;
+  border-radius:10px;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:30px;
+  background:white;
+  color:black;
+  font-weight:600;
+  margin-top:10px;
+  cursor:pointer;
+}
+
+a{
+  display:block;
+  margin-top:15px;
+  color:#ccc;
+  text-decoration:none;
+}
+</style>
+</head>
+
 <body>
 
-<h2>Signup</h2>
+<div class="card">
+  <h2>Create Account</h2>
 
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-<button onclick="signup()">Signup</button>
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+
+  <button onclick="signup()">Sign Up</button>
+
+  <a href="user-login.html">Already have an account?</a>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -22,9 +83,13 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 async function signup(){
-  await createUserWithEmailAndPassword(auth,email.value,password.value);
-  alert("Account created!");
-  window.location.href="user-login.html";
+  try{
+    await createUserWithEmailAndPassword(auth,email.value,password.value);
+    alert("Account created!");
+    window.location.href = "user-login.html";
+  }catch(e){
+    alert("Signup failed");
+  }
 }
 
 window.signup = signup;
